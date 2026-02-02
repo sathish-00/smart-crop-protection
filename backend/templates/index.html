@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriLink: Digital Farm Advisory Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    <style>
+        /* Basic styling for the Lang Button just in case CSS is missing */
+        .lang-btn {
+            background: rgba(100, 137, 190, 0.2);
+            color: rgb(130, 25, 130);
+            border: 1px solid rgb(62, 58, 176);
+            padding: 15px 35px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 100%;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <header class="main-header">
+
+        <div style="display:flex; justify-content:flex-end; padding:10px;">
+            <button id="langToggle" class="lang-btn" onclick="toggleLanguage()">తెలుగు</button>
+        </div>
+
+        <div class="welcome-message">
+            <center>
+                <h2 id="welcomeTitle">Your Smart Farming Assistant</h2>
+                <p id="welcomeDesc">Integrated guidance and market links for efficient cultivation.</p>
+            </center>
+        </div>
+    </header>
+
+    <footer id="main-nav-footer">
+        <div class="nav-button-container">
+
+            <a href="/disease/input" class="footer-nav-button">
+                <span class="nav-icon" id="navIcon1">Diagnosis</span>
+                <span class="nav-text" id="navText1">Detect Diseases</span>
+            </a>
+
+            <a href="/crop/cotton" class="footer-nav-button">
+                <span class="nav-icon" id="navIcon2">Guidance</span>
+                <span class="nav-text" id="navText2">Crop Roadmap</span>
+            </a>
+
+            <a href="/shops/finder" class="footer-nav-button">
+                <span class="nav-icon" id="navIcon3">Market</span>
+                <span class="nav-text" id="navText3">Nearby Shops</span>
+            </a>
+
+            <a href="/contact" class="footer-nav-button">
+                <span class="nav-icon" id="navIcon4">Support</span>
+                <span class="nav-text" id="navText4">Contact / Help</span>
+            </a>
+            
+            <a href="/crop/recommend" class="footer-nav-button">
+                <span class="nav-icon" id="navIcon5">Smart</span>
+                <span class="nav-text" id="navText5">Recommend Crop</span>
+            </a>
+
+        </div>
+    </footer>
+
+    <script>
+        // 1. Check LocalStorage or default to English
+        let currentLang = localStorage.getItem("agri_lang") || "en";
+
+        // 2. Define Translations
+        const translations = {
+            en: {
+                langBtn: "తెలుగు",
+                welcomeTitle: "Your Smart Farming Assistant",
+                welcomeDesc: "Integrated guidance and market links for efficient cultivation.",
+                
+                navIcon1: "Diagnosis",
+                navText1: "Detect Diseases",
+                
+                navIcon2: "Guidance",
+                navText2: "Crop Roadmap",
+                
+                navIcon3: "Market",
+                navText3: "Nearby Shops",
+                
+                navIcon4: "Support",
+                navText4: "Contact / Help",
+
+                navIcon5: "Smart",
+                navText5: "Recommend Crop"
+            },
+            te: {
+                langBtn: "English",
+                welcomeTitle: "మీ స్మార్ట్ వ్యవసాయ సహాయకుడు",
+                welcomeDesc: "సమర్థవంతమైన సాగు కోసం సమగ్ర మార్గదర్శకత్వం మరియు మార్కెట్ లింకులు.",
+                
+                navIcon1: "రోగ నిర్ధారణ",
+                navText1: "తెగుళ్ళను గుర్తించండి",
+                
+                navIcon2: "మార్గదర్శకత్వం",
+                navText2: "పంట ప్రణాళిక",
+                
+                navIcon3: "మార్కెట్",
+                navText3: "దగ్గర్లోని దుకాణాలు",
+                
+                navIcon4: "మద్దతు",
+                navText4: "సంప్రదించండి",
+
+                navIcon5: "స్మార్ట్",
+                navText5: "పంట సూచన"
+            }
+        };
+
+        // 3. Function to Apply Text
+        function applyLanguage() {
+            const t = translations[currentLang];
+
+            // Header
+            document.getElementById("langToggle").textContent = t.langBtn;
+            document.getElementById("welcomeTitle").textContent = t.welcomeTitle;
+            document.getElementById("welcomeDesc").textContent = t.welcomeDesc;
+
+            // Nav Buttons
+            document.getElementById("navIcon1").textContent = t.navIcon1;
+            document.getElementById("navText1").textContent = t.navText1;
+
+            document.getElementById("navIcon2").textContent = t.navIcon2;
+            document.getElementById("navText2").textContent = t.navText2;
+
+            document.getElementById("navIcon3").textContent = t.navIcon3;
+            document.getElementById("navText3").textContent = t.navText3;
+
+            document.getElementById("navIcon4").textContent = t.navIcon4;
+            document.getElementById("navText4").textContent = t.navText4;
+
+            // New 5th Button
+            document.getElementById("navIcon5").textContent = t.navIcon5;
+            document.getElementById("navText5").textContent = t.navText5;
+        }
+
+        // 4. Toggle Function (Called by Button)
+        function toggleLanguage() {
+            currentLang = currentLang === "en" ? "te" : "en";
+            localStorage.setItem("agri_lang", currentLang); // Save preference
+            applyLanguage();
+        }
+
+        // 5. Run on Page Load
+        document.addEventListener('DOMContentLoaded', applyLanguage);
+    </script>
+
+</body>
+</html>

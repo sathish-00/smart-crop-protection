@@ -1,0 +1,293 @@
+/* =========================================
+   1. CORE VARIABLES & RESET
+   ========================================= */
+:root {
+    --bg-page: #f0f2f5;
+    --bg-card: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    
+    /* AgriLink Brand Colors */
+    --primary-green: #9a7941;
+    --primary-dark: #321b30;
+    
+    /* UI Dimensions */
+    --radius-md: 16px;
+    --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
+    --shadow-hover: 0 10px 25px rgba(0,0,0,0.15);
+    
+    --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    line-height: 1.6;
+    padding-bottom: 60px;
+}
+
+/* =========================================
+   2. HEADER & NAVIGATION
+   ========================================= */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 1.9rem;
+    background: var(--primary-green);
+    color: rgb(49, 35, 22);
+    position: sticky;
+    -webkit-sticky: top;
+    top: 0;
+    text-size-adjust: 100%;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* 3-Column Layout Utilities */
+.header-left { flex: 1; display: flex; justify-content: flex-start; }
+.header-center { flex: 2; text-align: center; font-size: 1.25rem; font-weight: 700; white-space: nowrap; }
+.header-right { flex: 1; display: flex; justify-content: flex-end; }
+
+/* Back Button Styling */
+.back-btn {
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.15);
+    padding: 8px 16px;
+    border-radius: 30px;
+    transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateX(-2px);
+}
+
+/* Language Toggle Button */
+.lang-btn {
+    background: rgba(255, 255, 255, 0.11);
+    color: rgb(0, 0, 0);
+    border: 1px solid rgba(43, 60, 195, 0.3);
+    padding: 6px 12px;
+    width:auto;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.lang-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* =========================================
+   3. SEARCH CONTAINER
+   ========================================= */
+.container { 
+    max-width: 600px; 
+    margin: 30px auto; 
+    padding: 0 20px; 
+}
+
+.card {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 30px;
+    border: 1px solid white;
+}
+
+/* The "Note" Box */
+.note {
+    background: #fff3cd; 
+    color: #856404;
+    padding: 15px; 
+    border-radius: 10px;
+    font-size: 0.9rem; 
+    margin-bottom: 25px;
+    border-left: 5px solid #ffc107;
+    font-weight: 500;
+}
+
+/* Labels & Inputs */
+label { 
+    display: block; 
+    font-weight: 700; 
+    color: #2d3436; 
+    margin-bottom: 10px; 
+    font-size: 0.95rem; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+label:not(:first-child) { margin-top: 25px; }
+
+.input-box {
+    width: 100%; 
+    padding: 15px;
+    border: 2px solid #eef2f7; 
+    border-radius: 12px;
+    font-size: 1rem; 
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    color: #333;
+    font-family: inherit;
+}
+
+.input-box:focus { 
+    outline: none; 
+    border-color: var(--primary-green); 
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.1);
+}
+
+/* =========================================
+   4. ACTION BUTTONS
+   ========================================= */
+button {
+    width: 100%; 
+    padding: 16px;
+    font-weight: 700; 
+    border: none; 
+    border-radius: 12px;
+    font-size: 1.05rem; 
+    cursor: pointer; 
+    margin-top: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+}
+
+/* "Find Shops" Button - Green Gradient */
+
+
+
+
+/* "Google Maps" Button - Blue Gradient */
+.gmaps-btn {
+    background: linear-gradient(135deg, #0b2755 0%, #6291c1 100%) !important;
+    color: white;
+    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+}
+
+.gmaps-btn:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 8px 20px rgba(21, 79, 137, 0.4) !important;
+}
+
+/* =========================================
+   5. RESULTS AREA (Cards)
+   ========================================= */
+#results { color: var(--text-secondary); }
+
+.shop-card {
+    background: white;
+    border-radius: var(--radius-md);
+    overflow: hidden; 
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.03);
+    position: relative;
+    top: 0;
+}
+
+.shop-card:hover {
+    top: -5px; /* Lift Effect */
+    box-shadow: var(--shadow-hover);
+}
+
+/* Card Header (Title) */
+.shop-card-header {
+    padding: 18px 25px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.15rem;
+    text-transform: capitalize;
+    letter-spacing: 0.3px;
+}
+
+/* Card Body (Info) */
+.shop-card-body {
+    padding: 25px;
+    color: var(--text-secondary);
+}
+
+/* Distance Tag */
+.distance-tag {
+    display: inline-block;
+    background: #f1f5f9; 
+    color: #475569;
+    padding: 6px 12px; 
+    border-radius: 8px;
+    font-weight: 600; 
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Open in Map Link */
+.map-btn {
+    display: block; 
+    width: 100%;
+    text-align: center; 
+    text-decoration: none;
+    padding: 12px; 
+    border-radius: 10px;
+    border: 2px solid #eee;
+    color: #555; 
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    background: #fff;
+}
+
+.map-btn:hover { 
+    background: #333; 
+    color: white; 
+    border-color: #333; 
+}
+
+/* =========================================
+   6. CARD COLORS (Auto-Cycling)
+   ========================================= */
+/* 1. Emerald Green */
+.shop-card:nth-child(4n+1) .shop-card-header {
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+}
+
+/* 2. Royal Blue */
+.shop-card:nth-child(4n+2) .shop-card-header {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+/* 3. Sunset Orange */
+.shop-card:nth-child(4n+3) .shop-card-header {
+    background: linear-gradient(135deg, #f6d365, #fda085);
+}
+
+/* 4. Deep Purple */
+.shop-card:nth-child(4n+4) .shop-card-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+/* =========================================
+   7. RESPONSIVE DESIGN
+   ========================================= */
+@media (max-width: 480px) {
+    .container { padding: 0 15px; margin-top: 15px; }
+    .card { padding: 20px; }
+    .shop-card-header { padding: 15px 20px; font-size: 1rem; }
+    .header-center { font-size: 1.1rem; }
+}

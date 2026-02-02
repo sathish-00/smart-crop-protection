@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Support - AgriLink</title>
+    <meta name="description" content="Get in touch with AgriLink support team for crop recommendations, disease diagnosis, and farming assistance.">
+    <meta name="keywords" content="AgriLink, farming support, crop advice, disease diagnosis, agricultural help">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contact.css') }}">
+</head>
+
+<body>
+    <header class="app-header" role="banner" style="position: relative;">
+        
+        <a href="{{ url_for('main.index') }}" 
+           class="back-btn" 
+           aria-label="Go back to home page"
+           style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); z-index: 9999; cursor: pointer; text-decoration: none; color: inherit; font-weight: bold; font-size: 16px;">
+           &#8592; Back </a>
+
+        <h1 id="pageTitle">Contact Support</h1>
+        <button id="langToggle" class="language-toggle" aria-label="Switch language">తెలుగు</button>
+    </header>
+
+    <main class="contact-container" role="main">
+        <section class="contact-hero" aria-labelledby="heroTitle">
+            <h2 id="heroTitle">How can we help you?</h2>
+            <p id="heroDesc">Get in touch with our support team for assistance with crop recommendations, disease diagnosis, or any other farming queries.</p>
+        </section>
+
+        <section class="contact-options" aria-labelledby="contactOptionsTitle">
+            <h2 id="contactOptionsTitle" class="sr-only">Contact Options</h2>
+            <div class="contact-card">
+                <div class="contact-icon phone-icon"></div>
+                <h3 id="phoneTitle">Phone Support</h3>
+                <p id="phoneDesc">Call us for immediate assistance</p>
+                <a href="tel:+91-1800-XXX-XXXX" class="contact-link" id="phoneLink">+91-1800-XXX-XXXX</a>
+                <p class="contact-hours" id="phoneHours">Mon-Sat: 9:00 AM - 6:00 PM</p>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon email-icon"></div>
+                <h3 id="emailTitle">Email Support</h3>
+                <p id="emailDesc">Send us your queries via email</p>
+                <a href="mailto:support@agrilink.in" class="contact-link" id="emailLink">support@agrilink.in</a>
+                <p class="contact-hours" id="emailHours">Response within 24 hours</p>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon chat-icon"></div>
+                <h3 id="chatTitle">Live Chat</h3>
+                <p id="chatDesc">Chat with our experts online</p>
+                <button class="contact-link chat-btn" id="chatBtn">Start Chat</button>
+                <p class="contact-hours" id="chatHours">Available 24/7</p>
+            </div>
+        </section>
+
+        <section class="faq-section">
+            <h2 id="faqTitle">Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <button class="faq-question" id="faq1Question">How accurate are the crop recommendations?</button>
+                <div class="faq-answer" id="faq1Answer">
+                    Our recommendations are based on extensive research and local farming data. However, we always recommend consulting local agricultural experts for final decisions.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" id="faq2Question">What crops are supported in the roadmap feature?</button>
+                <div class="faq-answer" id="faq2Answer">
+                    We currently support major crops including Rice, Wheat, Maize, Cotton, Sugarcane, Groundnut, and several others. More crops will be added regularly.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" id="faq3Question">How does the disease diagnosis work?</button>
+                <div class="faq-answer" id="faq3Answer">
+                    Upload clear photos of affected plant parts, and our AI system will analyze the symptoms to provide possible disease identifications and treatment recommendations.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" id="faq4Question">Can I find nearby agricultural shops?</button>
+                <div class="faq-answer" id="faq4Answer">
+                    Yes! Use our shop finder feature to locate nearby fertilizer shops, seed dealers, and agricultural equipment stores within your selected radius.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" id="faq5Question">Is my data secure?</button>
+                <div class="faq-answer" id="faq5Answer">
+                    Absolutely. We prioritize your privacy and data security. All information is encrypted and never shared with third parties without your consent.
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-form-section">
+            <h2 id="formTitle">Send us a Message</h2>
+            <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                    <label for="name" id="nameLabel">Full Name *</label>
+                    <input type="text" id="name" name="name" required aria-describedby="nameLabel" aria-required="true">
+                </div>
+
+                <div class="form-group">
+                    <label for="email" id="emailLabel">Email Address *</label>
+                    <input type="email" id="email" name="email" required aria-describedby="emailLabel" aria-required="true">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone" id="phoneLabel">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" aria-describedby="phoneLabel">
+                </div>
+
+                <div class="form-group">
+                    <label for="category" id="categoryLabel">Category *</label>
+                    <select id="category" name="category" required aria-describedby="categoryLabel" aria-required="true">
+                        <option value="" id="categoryDefault">Select Category</option>
+                        <option value="recommendation" id="categoryRec">Crop Recommendation</option>
+                        <option value="diagnosis" id="categoryDiag">Disease Diagnosis</option>
+                        <option value="roadmap" id="categoryRoad">Crop Roadmap</option>
+                        <option value="shops" id="categoryShop">Shop Finder</option>
+                        <option value="technical" id="categoryTech">Technical Issue</option>
+                        <option value="other" id="categoryOther">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message" id="messageLabel">Message *</label>
+                    <textarea id="message" name="message" rows="5" required aria-describedby="messageLabel" aria-required="true" placeholder="Describe your query or issue in detail..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn" aria-label="Send your message">Send Message</button>
+            </form>
+        </section>
+
+        <section class="emergency-contact">
+            <div class="emergency-card">
+                <div class="emergency-icon"></div>
+                <h3 id="emergencyTitle">Emergency Support</h3>
+                <p id="emergencyDesc">For urgent farming emergencies or pest outbreaks, contact your local agricultural extension office immediately.</p>
+                <div class="emergency-contacts">
+                    <p><strong id="emergencyKrishi">Krishi Vigyan Kendra:</strong> <a href="tel:1800-180-1551">1800-180-1551</a></p>
+                    <p><strong id="emergencyAgri">State Agriculture Department:</strong> <a href="tel:1962">1962</a></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let currentLang = localStorage.getItem("contact_lang") || "en";
+
+        const uiText = {
+            en: {
+                pageTitle: "Contact Support",
+                heroTitle: "How can we help you?",
+                heroDesc: "Get in touch with our support team for assistance with crop recommendations, disease diagnosis, or any other farming queries.",
+                phoneTitle: "Phone Support",
+                phoneDesc: "Call us for immediate assistance",
+                phoneLink: "+91-1800-XXX-XXXX",
+                phoneHours: "Mon-Sat: 9:00 AM - 6:00 PM",
+                emailTitle: "Email Support",
+                emailDesc: "Send us your queries via email",
+                emailLink: "support@agrilink.in",
+                emailHours: "Response within 24 hours",
+                chatTitle: "Live Chat",
+                chatDesc: "Chat with our experts online",
+                chatBtn: "Start Chat",
+                chatHours: "Available 24/7",
+                faqTitle: "Frequently Asked Questions",
+                faq1Question: "How accurate are the crop recommendations?",
+                faq1Answer: "Our recommendations are based on extensive research and local farming data. However, we always recommend consulting local agricultural experts for final decisions.",
+                faq2Question: "What crops are supported in the roadmap feature?",
+                faq2Answer: "We currently support major crops including Rice, Wheat, Maize, Cotton, Sugarcane, Groundnut, and several others. More crops will be added regularly.",
+                faq3Question: "How does the disease diagnosis work?",
+                faq3Answer: "Upload clear photos of affected plant parts, and our AI system will analyze the symptoms to provide possible disease identifications and treatment recommendations.",
+                faq4Question: "Can I find nearby agricultural shops?",
+                faq4Answer: "Yes! Use our shop finder feature to locate nearby fertilizer shops, seed dealers, and agricultural equipment stores within your selected radius.",
+                faq5Question: "Is my data secure?",
+                faq5Answer: "Absolutely. We prioritize your privacy and data security. All information is encrypted and never shared with third parties without your consent.",
+                formTitle: "Send us a Message",
+                nameLabel: "Full Name *",
+                emailLabel: "Email Address *",
+                phoneLabel: "Phone Number",
+                categoryLabel: "Category *",
+                categoryDefault: "Select Category",
+                categoryRec: "Crop Recommendation",
+                categoryDiag: "Disease Diagnosis",
+                categoryRoad: "Crop Roadmap",
+                categoryShop: "Shop Finder",
+                categoryTech: "Technical Issue",
+                categoryOther: "Other",
+                messageLabel: "Message *",
+                submitBtn: "Send Message",
+                emergencyTitle: "🚨 Emergency Support",
+                emergencyDesc: "For urgent farming emergencies or pest outbreaks, contact your local agricultural extension office immediately.",
+                emergencyKrishi: "Krishi Vigyan Kendra:",
+                emergencyAgri: "State Agriculture Department:",
+                langToggle: "తెలుగు"
+            },
+            te: {
+                pageTitle: "సహాయం కోసం సంప్రదించండి",
+                heroTitle: "మేము మీకు ఎలా సహాయం చేయగలం?",
+                heroDesc: "పంట సిఫార్సులు, వ్యాధి నిర్ధారణ లేదా ఇతర వ్యవసాయ ప్రశ్నల కోసం మా సహాయ బృందాన్ని సంప్రదించండి.",
+                phoneTitle: "ఫోన్ సహాయం",
+                phoneDesc: "తక్షణ సహాయం కోసం మమ్మల్ని పిలవండి",
+                phoneLink: "+91-1800-XXX-XXXX",
+                phoneHours: "సోమ-శని: 9:00 AM - 6:00 PM",
+                emailTitle: "ఇమెయిల్ సహాయం",
+                emailDesc: "మీ ప్రశ్నలను ఇమెయిల్ ద్వారా పంపండి",
+                emailLink: "support@agrilink.in",
+                emailHours: "24 గంటలలోపు సమాధానం",
+                chatTitle: "ప్రత్యక్ష చాట్",
+                chatDesc: "ఆన్‌లైన్‌లో మా నిపుణులతో చాట్ చేయండి",
+                chatBtn: "చాట్ ప్రారంభించు",
+                chatHours: "24/7 అందుబాటులో ఉంది",
+                faqTitle: "తరచుగా అడిగే ప్రశ్నలు",
+                faq1Question: "పంట సిఫార్సులు ఎంత ఖచ్చితమైనవి?",
+                faq1Answer: "మా సిఫార్సులు విస్తృత పరిశోధన మరియు స్థానిక వ్యవసాయ డేటా ఆధారంగా ఉన్నాయి. అయినప్పటికీ, తుది నిర్ణయాల కోసం స్థానిక వ్యవసాయ నిపుణులను సంప్రదించాలని మేము ఎల్లప్పుడూ సిఫార్సు చేస్తాము.",
+                faq2Question: "రోడ్‌మ్యాప్ ఫీచర్‌లో ఏ పంటలకు మద్దతు ఉంది?",
+                faq2Answer: "మేము ప్రస్తుతం వరి, గోధుమ, మొక్కజొన్న, పత్తి, చెరకు, వేరుశెనగ మరియు అనేక ఇతర ప్రధాన పంటలకు మద్దతు ఇస్తున్నాము. మరిన్ని పంటలు క్రమం తప్పకుండా జోడించబడతాయి.",
+                faq3Question: "వ్యాధి నిర్ధారణ ఎలా పని చేస్తుంది?",
+                faq3Answer: "ప్రభావితమైన మొక్కల భాగాల యొక్క స్పష్టమైన ఫోటోలను అప్‌లోడ్ చేయండి, మరియు మా AI సిస్టమ్ లక్షణాలను విశ్లేషించి సాధ్యమైన వ్యాధి గుర్తింపులు మరియు చికిత్స సిఫార్సులను అందిస్తుంది.",
+                faq4Question: "దగ్గర్లో వ్యవసాయ దుకాణాలను కనుగొనగలనా?",
+                faq4Answer: "అవును! మీ ఎంచుకున్న వ్యాసార్థంలో దగ్గర్లో ఎరువు దుకాణాలు, విత్తన వ్యాపారులు మరియు వ్యవసాయ పరికరాల దుకాణాలను కనుగొనడానికి మా షాప్ ఫైండర్ ఫీచర్‌ను ఉపయోగించండి.",
+                faq5Question: "నా డేటా సురక్షితమా?",
+                faq5Answer: "నిస్సందేహంగా. మేము మీ గోప్యత మరియు డేటా భద్రతను ప్రాధాన్యం ఇస్తాము. అన్ని సమాచారం ఎన్‌క్రిప్ట్ చేయబడింది మరియు మీ అనుమతి లేకుండా మూడవ పక్షాలతో ఎప్పుడూ పంచుకోబడదు.",
+                formTitle: "మాకు సందేశం పంపండి",
+                nameLabel: "పూర్తి పేరు *",
+                emailLabel: "ఇమెయిల్ చిరునామా *",
+                phoneLabel: "ఫోన్ నంబర్",
+                categoryLabel: "వర్గం *",
+                categoryDefault: "వర్గం ఎంచుకోండి",
+                categoryRec: "పంట సిఫార్సు",
+                categoryDiag: "వ్యాధి నిర్ధారణ",
+                categoryRoad: "పంట రోడ్‌మ్యాప్",
+                categoryShop: "షాప్ ఫైండర్",
+                categoryTech: "సాంకేతిక సమస్య",
+                categoryOther: "ఇతర",
+                messageLabel: "సందేశం *",
+                submitBtn: "సందేశం పంపు",
+                emergencyTitle: "అత్యవసర సహాయం",
+                emergencyDesc: "అత్యవసర వ్యవసాయ అత్యవసరాలు లేదా కీటక ప్రభావం కోసం, వెంటనే మీ స్థానిక వ్యవసాయ పొడగింపు కార్యాలయాన్ని సంప్రదించండి.",
+                emergencyKrishi: "కృషి విజ్ఞాన కేంద్రం:",
+                emergencyAgri: "రాష్ట్ర వ్యవసాయ శాఖ:",
+                langToggle: "English"
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById("langToggle").addEventListener("click", toggleLanguage);
+            applyStaticLanguage();
+
+            // FAQ accordion functionality
+            document.querySelectorAll('.faq-question').forEach(button => {
+                button.addEventListener('click', () => {
+                    const faqItem = button.parentElement;
+                    faqItem.classList.toggle('active');
+                });
+            });
+
+            // Contact form submission
+            document.getElementById('contactForm').addEventListener('submit', handleFormSubmit);
+        });
+
+        function applyStaticLanguage() {
+            document.getElementById("pageTitle").textContent = uiText[currentLang].pageTitle;
+            document.getElementById("heroTitle").textContent = uiText[currentLang].heroTitle;
+            document.getElementById("heroDesc").textContent = uiText[currentLang].heroDesc;
+            document.getElementById("phoneTitle").textContent = uiText[currentLang].phoneTitle;
+            document.getElementById("phoneDesc").textContent = uiText[currentLang].phoneDesc;
+            document.getElementById("phoneLink").textContent = uiText[currentLang].phoneLink;
+            document.getElementById("phoneHours").textContent = uiText[currentLang].phoneHours;
+            document.getElementById("emailTitle").textContent = uiText[currentLang].emailTitle;
+            document.getElementById("emailDesc").textContent = uiText[currentLang].emailDesc;
+            document.getElementById("emailLink").textContent = uiText[currentLang].emailLink;
+            document.getElementById("emailHours").textContent = uiText[currentLang].emailHours;
+            document.getElementById("chatTitle").textContent = uiText[currentLang].chatTitle;
+            document.getElementById("chatDesc").textContent = uiText[currentLang].chatDesc;
+            document.getElementById("chatBtn").textContent = uiText[currentLang].chatBtn;
+            document.getElementById("chatHours").textContent = uiText[currentLang].chatHours;
+            document.getElementById("faqTitle").textContent = uiText[currentLang].faqTitle;
+            document.getElementById("faq1Question").textContent = uiText[currentLang].faq1Question;
+            document.getElementById("faq1Answer").textContent = uiText[currentLang].faq1Answer;
+            document.getElementById("faq2Question").textContent = uiText[currentLang].faq2Question;
+            document.getElementById("faq2Answer").textContent = uiText[currentLang].faq2Answer;
+            document.getElementById("faq3Question").textContent = uiText[currentLang].faq3Question;
+            document.getElementById("faq3Answer").textContent = uiText[currentLang].faq3Answer;
+            document.getElementById("faq4Question").textContent = uiText[currentLang].faq4Question;
+            document.getElementById("faq4Answer").textContent = uiText[currentLang].faq4Answer;
+            document.getElementById("faq5Question").textContent = uiText[currentLang].faq5Question;
+            document.getElementById("faq5Answer").textContent = uiText[currentLang].faq5Answer;
+            document.getElementById("formTitle").textContent = uiText[currentLang].formTitle;
+            document.getElementById("nameLabel").textContent = uiText[currentLang].nameLabel;
+            document.getElementById("emailLabel").textContent = uiText[currentLang].emailLabel;
+            document.getElementById("phoneLabel").textContent = uiText[currentLang].phoneLabel;
+            document.getElementById("categoryLabel").textContent = uiText[currentLang].categoryLabel;
+            document.getElementById("categoryDefault").textContent = uiText[currentLang].categoryDefault;
+            document.getElementById("categoryRec").textContent = uiText[currentLang].categoryRec;
+            document.getElementById("categoryDiag").textContent = uiText[currentLang].categoryDiag;
+            document.getElementById("categoryRoad").textContent = uiText[currentLang].categoryRoad;
+            document.getElementById("categoryShop").textContent = uiText[currentLang].categoryShop;
+            document.getElementById("categoryTech").textContent = uiText[currentLang].categoryTech;
+            document.getElementById("categoryOther").textContent = uiText[currentLang].categoryOther;
+            document.getElementById("messageLabel").textContent = uiText[currentLang].messageLabel;
+            document.getElementById("submitBtn").textContent = uiText[currentLang].submitBtn;
+            document.getElementById("emergencyTitle").textContent = uiText[currentLang].emergencyTitle;
+            document.getElementById("emergencyDesc").textContent = uiText[currentLang].emergencyDesc;
+            document.getElementById("emergencyKrishi").textContent = uiText[currentLang].emergencyKrishi;
+            document.getElementById("emergencyAgri").textContent = uiText[currentLang].emergencyAgri;
+            document.getElementById("langToggle").textContent = uiText[currentLang].langToggle;
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === "en" ? "te" : "en";
+            localStorage.setItem("contact_lang", currentLang);
+            applyStaticLanguage();
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const submitBtn = form.querySelector('.submit-btn');
+
+            // Basic validation
+            const name = form.name.value.trim();
+            const email = form.email.value.trim();
+            const category = form.category.value;
+            const message = form.message.value.trim();
+
+            if (!name || !email || !category || !message) {
+                showMessage(currentLang === "en" ? 
+                    "Please fill in all required fields." : 
+                    "దయచేసి అన్ని అవసరమైన ఫీల్డ్‌లను పూరించండి.", "error");
+                return;
+            }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showMessage(currentLang === "en" ? 
+                    "Please enter a valid email address." : 
+                    "దయచేసి సరైన ఇమెయిల్ చిరునామాను నమోదు చేయండి.", "error");
+                return;
+            }
+
+            // Show loading state
+            submitBtn.classList.add('form-loading');
+            submitBtn.textContent = currentLang === "en" ? "Sending..." : "పంపుతోంది...";
+
+            // Simulate form submission (replace with actual API call)
+            setTimeout(() => {
+                submitBtn.classList.remove('form-loading');
+                submitBtn.textContent = currentLang === "en" ? "Send Message" : "సందేశం పంపు";
+
+                showMessage(currentLang === "en" ? 
+                    "Thank you for your message! We'll get back to you soon." : 
+                    "మీ సందేశం కోసం ధన్యవాదాలు! మేము త్వరలో మీకు తిరిగి వస్తాము.", "success");
+                
+                form.reset();
+            }, 2000);
+        }
+
+        function showMessage(message, type) {
+            // Remove existing message
+            const existingMessage = document.querySelector('.success-message, .error-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
+            messageDiv.textContent = message;
+
+            const form = document.getElementById('contactForm');
+            form.parentNode.insertBefore(messageDiv, form.nextSibling);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

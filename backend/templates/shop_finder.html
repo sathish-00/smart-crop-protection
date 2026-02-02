@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nearby Farmer Shops Finder</title>
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/shop_finder.css') }}">
+
+</head>
+
+<body>
+
+  <header>
+    <div class="header-left">
+      <a href="{{ url_for('main.index') }}" class="back-btn">← Back</a>
+    </div>
+    
+    <div class="header-center" id="pageTitle">
+      Farmer Shop Finder
+    </div>
+    
+    <div class="header-right">
+      <button class="lang-btn" id="langToggle" onclick="toggleLanguage()">తెలుగు</button>
+    </div>
+  </header>
+
+<div class="container">
+
+  <div class="card">
+    <p class="note" id="noteText">
+      Sample data from OpenStreetMap. Rural coverage may vary.
+    </p>
+
+    <label id="lblAddress">Enter Area / Town</label>
+    <input id="address" class="input-box" placeholder="Example: Guntur mandi">
+
+    <label id="lblRadius">Select Distance</label>
+    <select id="radius" class="input-box">
+      <option value="10">10 km</option>
+      <option value="20" selected>20 km</option>
+      <option value="30">30 km</option>
+      <option value="50">50 km</option>
+      <option value="100">100 km</option>
+    </select>
+
+    <button id="btnFind" class="primary-btn" onclick="search()">
+      Find Shops
+    
+    <button onclick="openGoogleMapsSearch()" class="gmaps-btn" id="btnGoogle">
+       Search on Google Maps App
+    </button>
+  </div>
+
+  
+
+<script>
+/* ---------- Language Handling ---------- */
+let currentLang = localStorage.getItem("shop_lang") || "en";
+
+const translations = {
+    en: {
+        title: "Farmer Shop Finder",
+        langBtn: "తెలుగు",
+        note: "Sample data from OpenStreetMap. Rural coverage may vary.",
+        lblAddress: "Enter Area / Town",
+        placeholder: "Example: Guntur mandi",
+        lblRadius: "Select Distance",
+        
+        btnGoogle: "Search on Google Maps App", // English Text
+        lblResults: "Results",
+        defaultRes: "Enter a location to search.",
+        finding: "Finding location...",
+        notFound: "Location not found.",
+        noShops: "No farmer-related shops found in OpenStreetMap for this area.<br><br>👉 This is common in rural regions.<br>👉 Try a nearby town or mandi for demo.",
+        openMap: "Open in Google Maps",
+        errorLoc: "Error fetching location.",
+        errorShop: "Error fetching shops data."
+    },
+    te: {
+        title: "రైతు దుకాణాల అన్వేషణ",
+        langBtn: "English",
+        note: "ఓపెన్ స్ట్రీట్ మ్యాప్ నుండి నమూనా డేటా. గ్రామీణ ప్రాంతాల్లో సమాచారం తక్కువగా ఉండవచ్చు.",
+        lblAddress: "ప్రాంతం / ఊరు నమోదు చేయండి",
+        placeholder: "ఉదాహరణ: గుంటూరు మార్కెట్",
+        lblRadius: "దూరాన్ని ఎంచుకోండి",
+        
+        btnGoogle: "గూగుల్ మ్యాప్స్‌లో వెతకండి", // Telugu Text
+        lblResults: "ఫలితాలు",
+        defaultRes: "వెతకడానికి ఒక ప్రాంతాన్ని నమోదు చేయండి.",
+        finding: "ప్రాంతాన్ని వెతుకుతోంది...",
+        notFound: "ప్రాంతం దొరకలేదు.",
+        noShops: "ఈ ప్రాంతంలో రైతు దుకాణాలు కనుగొనబడలేదు.<br><br>👉 గ్రామీణ ప్రాంతాల్లో ఇది సాధారణం.<br>👉 దగ్గర్లోని పట్టణం లేదా మండీని ప్రయత్నించండి.",
+        openMap: "గూగుల్ మ్యాప్స్‌లో తెరవండి",
+        errorLoc: "ప్రాంతాన్ని పొందడంలో లోపం.",
+        errorShop: "దుకాణాల డేటాను పొందడంలో లోపం."
+    }
+};
+
+function applyLanguage() {
+    const t = translations[currentLang];
+    
+    document.getElementById("pageTitle").textContent = t.title;
+    document.getElementById("langToggle").textContent = t.langBtn;
+    document.getElementById("noteText").textContent = t.note;
+    document.getElementById("lblAddress").textContent = t.lblAddress;
+    document.getElementById("address").placeholder = t.placeholder;
+    document.getElementById("lblRadius").textContent = t.lblRadius;
+    document.getElementById("btnFind").textContent = t.btnFind;
+    
+    // ✅ THIS IS THE FIX: Explicitly updating the Google Button Text
+    document.getElementById("btnGoogle").textContent = t.btnGoogle;
+    
+    document.getElementById("lblResults").textContent = t.lblResults;
+    
+    const resDiv = document.getElementById("results");
+    if (resDiv.innerHTML.includes("Enter a location") || resDiv.innerHTML.includes("వెతకడానికి")) {
+        resDiv.textContent = t.defaultRes;
+    }
+}
+
+function toggleLanguage() {
+    currentLang = currentLang === "en" ? "te" : "en";
+    localStorage.setItem("shop_lang", currentLang);
+    applyLanguage();
+}
+
+// Initial Call to set language on load
+applyLanguage();
+
+
+/* ---------- Distance Calculation ---------- */
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371; 
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat/2)**2 +
+    Math.cos(lat1*Math.PI/180) *
+    Math.cos(lat2*Math.PI/180) *
+    Math.sin(dLon/2)**2;
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+}
+
+/* ---------- Google Maps Search (FIXED URL) ---------- */
+function openGoogleMapsSearch() {
+    const address = document.getElementById("address").value.trim();
+    if (!address) {
+        alert(currentLang === 'en' ? "Please enter a location first." : "దయచేసి ముందుగా లొకేషన్‌ను నమోదు చేయండి.");
+        return;
+    }
+    const query = encodeURIComponent("Fertilizer shops near " + address);
+    
+    // ✅ FIX: Correct URL format to open Google Maps
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+}
+
+/* ---------- Main Search ---------- */
+async function search() {
+  const address = document.getElementById("address").value.trim();
+  const radiusKm = parseInt(document.getElementById("radius").value);
+  const resultsDiv = document.getElementById("results");
+  const t = translations[currentLang];
+
+  if (!address) {
+    alert(currentLang === 'en' ? "Enter location" : "ప్రాంతాన్ని నమోదు చేయండి");
+    return;
+  }
+
+  resultsDiv.innerHTML = t.finding;
+
+  try {
+    const geoRes = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+    );
+    const geo = await geoRes.json();
+
+    if (!geo.length) {
+      resultsDiv.innerHTML = t.notFound;
+      return;
+    }
+
+    fetchOSMShops(parseFloat(geo[0].lat), parseFloat(geo[0].lon), radiusKm);
+  } catch (error) {
+    resultsDiv.innerHTML = t.errorLoc;
+    console.error(error);
+  }
+}
+
+/* ---------- OSM Fetch ---------- */
+async function fetchOSMShops(lat, lon, radiusKm) {
+  const resultsDiv = document.getElementById("results");
+  const t = translations[currentLang];
+  
+  resultsDiv.innerHTML = currentLang === 'en' ? "Searching OpenStreetMap..." : "ఓపెన్ స్ట్రీట్ మ్యాప్‌లో వెతుకుతోంది...";
+
+  const radiusMeters = radiusKm * 1000;
+
+  const query = `
+  [out:json][timeout:40];
+  (
+    node["shop"](around:${radiusMeters},${lat},${lon});
+    way["shop"](around:${radiusMeters},${lat},${lon});
+    node["amenity"="marketplace"](around:${radiusMeters},${lat},${lon});
+    way["amenity"="marketplace"](around:${radiusMeters},${lat},${lon});
+  );
+  out center tags;
+  `;
+
+  try {
+    const res = await fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      body: query
+    });
+
+    const data = await res.json();
+
+    const shops = data.elements
+      .map(el => {
+        const lat2 = el.lat || el.center?.lat;
+        const lon2 = el.lon || el.center?.lon;
+        if (!lat2 || !lon2) return null;
+
+        const d = haversine(lat, lon, lat2, lon2);
+        if (d > radiusKm) return null;
+
+        return {
+          name: el.tags.name || (currentLang === 'en' ? "Unnamed Shop" : "పేరు లేని దుకాణం"),
+          lat: lat2,
+          lon: lon2,
+          distance: d.toFixed(2)
+        };
+      })
+      .filter(Boolean)
+      .sort((a,b) => a.distance - b.distance);
+
+    if (!shops.length) {
+      resultsDiv.innerHTML = t.noShops;
+      return;
+    }
+
+    let html = "";
+    shops.slice(0,25).forEach(s => {
+      // ✅ FIX: Correct Google Maps Pin URL
+      const mapLink = `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lon}`;
+
+      html += `
+        <div class="shop-card">
+          <div class="shop-card-header">
+             ${s.name}
+          </div>
+          
+          <div class="shop-card-body">
+             <span class="distance-tag">📍 ${s.distance} km</span>
+             <br>
+             <a class="map-btn" target="_blank" href="${mapLink}">
+               ${t.openMap}
+             </a>
+          </div>
+        </div>
+      `;
+    });
+
+    resultsDiv.innerHTML = html;
+    
+  } catch (error) {
+    resultsDiv.innerHTML = t.errorShop;
+    console.error(error);
+  }
+}
+</script>
+
+</body>
+</html>

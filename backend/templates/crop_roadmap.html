@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Roadmap: {{ crop }}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/crop_roadmap.css') }}">
+</head>
+
+<body>
+    <header class="app-header">
+        <button type="button" class="back-btn" onclick="window.location.href='/'">Back</button>
+
+        <div class="crop-selector">
+            <select id="cropSelect" class="crop-dropdown">
+                <option value="">Select Crop</option>
+                <option value="rice">Rice</option>
+                <option value="maize">Maize</option>
+                <option value="cotton">Cotton</option>
+                <option value="sugarcane">Sugarcane</option>
+                <option value="groundnut">Groundnut</option>
+                <option value="chilli">Chilli</option>
+                <option value="tomato">Tomato</option>
+                <option value="onion">Onion</option>
+                <option value="sunflower">Sunflower</option>
+                <option value="bengalgram">Bengal Gram</option>
+            </select>
+        </div>
+
+        <h1 id="crop-title">Select a Crop</h1>
+
+        <button id="langToggle" class="language-toggle">తెలుగు</button>
+    </header>
+
+    <main class="roadmap-container">
+
+        <section class="crop-summary card">
+            <h2 id="summaryHeading">Crop Details</h2>
+
+            <p>
+                <strong id="soilLabel">Soil Type:</strong>
+                <span id="soil-type">...</span>
+            </p>
+
+            <p>
+                <strong id="seasonLabel">Sowing Season:</strong>
+                <span id="sowing-season">...</span>
+            </p>
+
+            <p>
+                <strong id="daysLabel">Cycle Days:</strong>
+                <span id="cycle-days">...</span>
+            </p>
+        </section>
+
+        <section class="schedule-section">
+            <h2 id="roadmapHeading">Cultivation Roadmap</h2>
+            <div id="schedule-timeline" class="timeline-container">
+                <div id="loadingText" class="loading-state">Loading data...</div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+    let currentLang = localStorage.getItem("crop_lang") || "en";
+    let cropData = null;
+
+    // 1. UI Translations (Labels, Headings)
+    const uiText = {
+        en: {
+            toggleBtn: "తెలుగు",
+            summaryHeading: "Crop Details",
+            soilLabel: "Soil Type:",
+            seasonLabel: "Sowing Season:",
+            daysLabel: "Cycle Days:",
+            roadmapHeading: "Cultivation Roadmap",
+            loading: "Loading data...",
+            weekText: "weeks",
+            fertilizerLabel: "Fertilizer:",
+            irrigationLabel: "Irrigation:",
+            errorPrefix: "Error: ",
+            fetchFail: "Failed to load data.",
+            selectCrop: "Select Crop",
+            selectPrompt: "Select a crop to view its roadmap."
+        },
+        te: {
+            toggleBtn: "English",
+            summaryHeading: "పంట వివరాలు",
+            soilLabel: "నేల:",
+            seasonLabel: "పంట కాలం:",
+            daysLabel: "మొత్తం రోజులు:",
+            roadmapHeading: "సాగు మార్గసూచి",
+            loading: "డేటా లోడ్ అవుతోంది...",
+            weekText: "వారాలు",
+            fertilizerLabel: "ఎరువు:",
+            irrigationLabel: "నీరు:",
+            errorPrefix: "లోపం: ",
+            fetchFail: "డేటా లోడ్ చేయడంలో లోపం సంభవించింది.",
+            selectCrop: "పంట ఎంచుకోండి",
+            selectPrompt: "దాని మార్గసూచిని చూడటానికి పంటను ఎంచుకోండి."
+        }
+    };
+
+    // 2. Crop Name Translations (For the Dropdown)
+    const cropNames = {
+        "rice": { en: "Rice", te: "వరి" },
+        "maize": { en: "Maize", te: "మొక్కజొన్న" },
+        "cotton": { en: "Cotton", te: "పత్తి" },
+        "sugarcane": { en: "Sugarcane", te: "చెరకు" },
+        "groundnut": { en: "Groundnut", te: "వేరుశనగ" },
+        "chilli": { en: "Chilli", te: "మిరప" },
+        "tomato": { en: "Tomato", te: "టమాటా" },
+        "onion": { en: "Onion", te: "ఉల్లిపాయ" },
+        "sunflower": { en: "Sunflower", te: "పొద్దుతిరుగుడు" },
+        "bengalgram": { en: "Bengal Gram", te: "శనగలు" }
+    };
+
+    // 3. Month Translation Helper
+    function toTeluguMonths(text) {
+        if (!text) return text;
+        const map = {
+            "January": "జనవరి", "Jan": "జనవరి",
+            "February": "ఫిబ్రవరి", "Feb": "ఫిబ్రవరి",
+            "March": "మార్చి", "Mar": "మార్చి",
+            "April": "ఏప్రిల్", "Apr": "ఏప్రిల్",
+            "May": "మే",
+            "June": "జూన్", "Jun": "జూన్",
+            "July": "జులై", "Jul": "జులై",
+            "August": "ఆగస్టు", "Aug": "ఆగస్టు",
+            "September": "సెప్టెంబర్", "Sep": "సెప్టెంబర్",
+            "October": "అక్టోబర్", "Oct": "అక్టోబర్",
+            "November": "నవంబర్", "Nov": "నవంబర్",
+            "December": "డిసెంబర్", "Dec": "డిసెంబర్"
+        };
+        let out = text;
+        Object.keys(map).forEach((m) => {
+            const re = new RegExp(`\\b${m}\\b`, "g");
+            out = out.replace(re, map[m]);
+        });
+        return out;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById("langToggle").addEventListener("click", toggleLanguage);
+        document.getElementById("cropSelect").addEventListener("change", handleCropChange);
+        
+        applyStaticLanguage(); // Apply language immediately
+
+        // Auto-select crop if passed from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const cropFromUrl = urlParams.get('crop');
+        
+        // Handle Python '{{ crop }}' variable injection if needed (as backup)
+        // const pythonCrop = "{{ crop | default('') }}"; 
+        
+        const finalCrop = cropFromUrl; // || pythonCrop (if you use jinja rendering directly)
+
+        if (finalCrop && finalCrop !== 'none') {
+            document.getElementById("cropSelect").value = finalCrop;
+            fetchData(finalCrop);
+        } else {
+            // Default View
+            document.getElementById('crop-title').textContent = uiText[currentLang].selectCrop;
+            document.getElementById('schedule-timeline').innerHTML = `<p>${uiText[currentLang].selectPrompt}</p>`;
+        }
+    });
+
+    function applyStaticLanguage() {
+        // Update Static Labels
+        document.getElementById("langToggle").innerText = uiText[currentLang].toggleBtn;
+        document.getElementById("summaryHeading").innerText = uiText[currentLang].summaryHeading;
+        document.getElementById("soilLabel").innerText = uiText[currentLang].soilLabel;
+        document.getElementById("seasonLabel").innerText = uiText[currentLang].seasonLabel;
+        document.getElementById("daysLabel").innerText = uiText[currentLang].daysLabel;
+        document.getElementById("roadmapHeading").innerText = uiText[currentLang].roadmapHeading;
+
+        const loadingEl = document.getElementById("loadingText");
+        if (loadingEl) loadingEl.innerText = uiText[currentLang].loading;
+
+        // --- NEW: Update Dropdown Options ---
+        const selectBox = document.getElementById("cropSelect");
+        
+        // Update the default "Select Crop" option
+        const defaultOption = selectBox.querySelector('option[value=""]');
+        if (defaultOption) defaultOption.textContent = uiText[currentLang].selectCrop;
+
+        // Update all crop names in the dropdown
+        Array.from(selectBox.options).forEach(option => {
+            const val = option.value; // e.g., "rice"
+            if (val && cropNames[val]) {
+                option.textContent = cropNames[val][currentLang];
+            }
+        });
+
+        // Update main title if no data is loaded yet
+        if (!cropData) {
+            document.getElementById('crop-title').textContent = uiText[currentLang].selectCrop;
+            document.getElementById('schedule-timeline').innerHTML = `<p>${uiText[currentLang].selectPrompt}</p>`;
+        }
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === "en" ? "te" : "en";
+        localStorage.setItem("crop_lang", currentLang);
+
+        applyStaticLanguage();
+
+        // If data is already loaded, re-render it in the new language
+        if (cropData) {
+            renderCropData(cropData);
+        }
+    }
+
+    function handleCropChange() {
+        const selectedCrop = document.getElementById("cropSelect").value;
+        if (selectedCrop) {
+            const newUrl = `${window.location.pathname}?crop=${selectedCrop}`;
+            window.history.pushState({}, '', newUrl);
+            fetchData(selectedCrop);
+        } else {
+            // Reset UI
+            document.getElementById('crop-title').textContent = uiText[currentLang].selectCrop;
+            document.getElementById('schedule-timeline').innerHTML = `<p>${uiText[currentLang].selectPrompt}</p>`;
+            document.getElementById('soil-type').textContent = '...';
+            document.getElementById('sowing-season').textContent = '...';
+            document.getElementById('cycle-days').textContent = '...';
+            cropData = null;
+        }
+    }
+
+    function fetchData(cropName) {
+        if (!cropName) return;
+        const apiUrl = `/api/crop/${cropName.toLowerCase()}`;
+
+        document.getElementById('schedule-timeline').innerHTML = `<p id="loadingText">${uiText[currentLang].loading}</p>`;
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('schedule-timeline').innerHTML =
+                        `<div class="error-message">${uiText[currentLang].errorPrefix}${data.error}</div>`;
+                    return;
+                }
+                cropData = data;
+                renderCropData(data);
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                document.getElementById('schedule-timeline').innerHTML =
+                    `<div class="error-message">${uiText[currentLang].fetchFail}</div>`;
+            });
+    }
+
+    function renderCropData(data) {
+        // Title
+        document.getElementById('crop-title').textContent =
+            currentLang === "te" ? (data.name_te || data.name_en) : (data.name_en || data.name_te);
+
+        // Soil
+        document.getElementById('soil-type').textContent =
+            currentLang === "te" ? (data.soil_type_te || data.soil_type_en) : (data.soil_type_en || data.soil_type_te);
+
+        // Season
+        let seasonText =
+            currentLang === "te" ? (data.sowing_season_te || data.sowing_season_en) : (data.sowing_season_en || data.sowing_season_te);
+        
+        if (currentLang === "te") seasonText = toTeluguMonths(seasonText);
+        document.getElementById('sowing-season').textContent = seasonText;
+
+        // Days
+        document.getElementById('cycle-days').textContent = data.crop_cycle_days;
+
+        // Roadmap
+        const scheduleTimeline = document.getElementById('schedule-timeline');
+        scheduleTimeline.innerHTML = '';
+        const cropNameQuery = data.name_en || "Crop";
+
+        data.roadmap.forEach((item, index) => {
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'timeline-step';
+
+            const stageText = currentLang === "te" ? (item.stage_te || item.stage_en) : (item.stage_en || item.stage_te);
+            const stageQuery = item.stage_en || stageText;
+            const fertilizerText = currentLang === "te" ? (item.fertilizer_te || item.fertilizer_en) : (item.fertilizer_en || item.fertilizer_te);
+            const irrigationText = currentLang === "te" ? (item.irrigation_te || item.irrigation_en) : (item.irrigation_en || item.irrigation_te);
+
+            stepDiv.innerHTML = `
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">${index + 1}</div>
+                        <div class="step-title">${stageText}</div>
+                    </div>
+                    <div class="step-content">
+                         
+                        
+                        <div class="week-info">${item.week_range} ${uiText[currentLang].weekText}</div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <span class="detail-icon">🌱</span>
+                                <strong>${uiText[currentLang].fertilizerLabel}</strong> ${fertilizerText}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-icon">💧</span>
+                                <strong>${uiText[currentLang].irrigationLabel}</strong> ${irrigationText}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ${index < data.roadmap.length - 1 ? '<div class="timeline-arrow">→</div>' : ''}
+            `;
+            scheduleTimeline.appendChild(stepDiv);
+        });
+    }
+</script>
+
+</body>
+</html>

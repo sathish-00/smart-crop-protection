@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crop Recommendation</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/crop_recommend.css') }}">
+</head>
+
+<body>
+
+  <header class="app-header">
+
+    <!-- ✅ Back Button top-left -->
+    <button type="button" class="back-btn" onclick="window.location.href='/'">Back</button>
+
+    <h2 id="recTitle" class="page-title">Crop Recommendation</h2>
+
+    <button id="langToggle" class="lang-btn">తెలుగు</button>
+  </header>
+
+  <main class="container">
+
+    <div class="card">
+      <h3 id="formTitle">Select Your Conditions</h3>
+
+      <label id="soilLbl"><b>Soil Type</b></label>
+      <select id="soil" class="input-box">
+        <option id="soil_black" value="black">Black Soil</option>
+        <option id="soil_red" value="red">Red Soil</option>
+        <option id="soil_sandy" value="sandy">Sandy Soil</option>
+        <option id="soil_alluvial" value="alluvial">Alluvial Soil</option>
+        <option id="soil_clay" value="clay">Clay Soil</option>
+      </select>
+
+      <label id="seasonLbl"><b>Season</b></label>
+      <select id="season" class="input-box">
+        <option id="season_kharif" value="kharif">Kharif</option>
+        <option id="season_rabi" value="rabi">Rabi</option>
+        <option id="season_summer" value="summer">Summer</option>
+      </select>
+
+      <label id="waterLbl"><b>Water Source</b></label>
+      <select id="water" class="input-box">
+        <option id="water_rainfed" value="rainfed">Rainfed</option>
+        <option id="water_borewell" value="borewell">Borewell</option>
+        <option id="water_canal" value="canal">Canal</option>
+        <option id="water_drip" value="drip">Drip</option>
+      </select>
+
+      <label id="budgetLbl"><b>Budget</b></label>
+      <select id="budget" class="input-box">
+        <option id="budget_low" value="low">Low</option>
+        <option id="budget_medium" value="medium">Medium</option>
+        <option id="budget_high" value="high">High</option>
+      </select>
+
+      <button id="btnRec" class="primary-btn">Recommend Crops</button>
+    </div>
+
+    <div class="card">
+      <h3 id="resultTitle">Recommended Crops</h3>
+      <div id="resultsBox">
+        <p id="resultMsg">Please select values and click recommend.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    let currentLang = localStorage.getItem("rec_lang") || "en";
+    let lastResults = []; // ✅ store results for toggle re-render
+
+    const ui = {
+      en: {
+        recTitle: "Crop Recommendation",
+        formTitle: "Select Your Conditions",
+        soilLbl: "Soil Type",
+        seasonLbl: "Season",
+        waterLbl: "Water Source",
+        budgetLbl: "Budget",
+        btnRec: "Recommend Crops",
+        resultTitle: "Recommended Crops",
+        resultMsg: "Please select values and click recommend.",
+        toggleBtn: "తెలుగు",
+
+        soil_black: "Black Soil",
+        soil_red: "Red Soil",
+        soil_sandy: "Sandy Soil",
+        soil_alluvial: "Alluvial Soil",
+        soil_clay: "Clay Soil",
+
+        season_kharif: "Kharif",
+        season_rabi: "Rabi",
+        season_summer: "Summer",
+
+        water_rainfed: "Rainfed",
+        water_borewell: "Borewell",
+        water_canal: "Canal",
+        water_drip: "Drip",
+
+        budget_low: "Low",
+        budget_medium: "Medium",
+        budget_high: "High",
+
+        loading: "Loading...",
+        openRoadmap: "Open Roadmap",
+        score: "Score",
+        reason: "Reason",
+        noCrops: "No crops found.",
+        failed: "Failed to load"
+      },
+
+      te: {
+        recTitle: "పంట సిఫార్సు",
+        formTitle: "మీ పరిస్థితులను ఎంచుకోండి",
+        soilLbl: "నేల రకం",
+        seasonLbl: "సీజన్",
+        waterLbl: "నీటి వనరు",
+        budgetLbl: "బడ్జెట్",
+        btnRec: "పంటలు సిఫార్సు చేయండి",
+        resultTitle: "సిఫార్సు చేసిన పంటలు",
+        resultMsg: "విలువలను ఎంచుకొని సిఫార్సు క్లిక్ చేయండి.",
+        toggleBtn: "English",
+
+        soil_black: "నల్ల నేల",
+        soil_red: "ఎర్ర నేల",
+        soil_sandy: "ఇసుక నేల",
+        soil_alluvial: "ఒడ్డునేల (ఆల్యూవియల్)",
+        soil_clay: "మట్టి నేల",
+
+        season_kharif: "ఖరీఫ్",
+        season_rabi: "రబీ",
+        season_summer: "వేసవి",
+
+        water_rainfed: "వర్షాధార",
+        water_borewell: "బోరుబావి",
+        water_canal: "కాలువ",
+        water_drip: "డ్రిప్",
+
+        budget_low: "తక్కువ",
+        budget_medium: "మధ్యస్థం",
+        budget_high: "ఎక్కువ",
+
+        loading: "లోడ్ అవుతోంది...",
+        openRoadmap: "రోడ్మాప్ చూడండి",
+        score: "స్కోర్",
+        reason: "కారణం",
+        noCrops: "పంటలు లభించలేదు.",
+        failed: "లోడ్ కాలేదు"
+      }
+    };
+
+    function applyLang() {
+      document.getElementById("recTitle").innerText = ui[currentLang].recTitle;
+      document.getElementById("formTitle").innerText = ui[currentLang].formTitle;
+      document.getElementById("soilLbl").innerText = ui[currentLang].soilLbl;
+      document.getElementById("seasonLbl").innerText = ui[currentLang].seasonLbl;
+      document.getElementById("waterLbl").innerText = ui[currentLang].waterLbl;
+      document.getElementById("budgetLbl").innerText = ui[currentLang].budgetLbl;
+      document.getElementById("btnRec").innerText = ui[currentLang].btnRec;
+      document.getElementById("resultTitle").innerText = ui[currentLang].resultTitle;
+
+      const ids = [
+        "soil_black","soil_red","soil_sandy","soil_alluvial","soil_clay",
+        "season_kharif","season_rabi","season_summer",
+        "water_rainfed","water_borewell","water_canal","water_drip",
+        "budget_low","budget_medium","budget_high"
+      ];
+
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = ui[currentLang][id];
+      });
+
+      const msg = document.getElementById("resultMsg");
+      if (msg) msg.innerText = ui[currentLang].resultMsg;
+
+      document.getElementById("langToggle").innerText = ui[currentLang].toggleBtn;
+    }
+
+    function renderResults(list) {
+      const resultsBox = document.getElementById("resultsBox");
+
+      if (!list || list.length === 0) {
+        resultsBox.innerHTML = `<p>${ui[currentLang].noCrops}</p>`;
+        return;
+      }
+
+      let html = "";
+      list.forEach(item => {
+        html += `
+          <div class="result-card">
+            <div class="result-head">
+              <h4>${item.crop}</h4>
+              <span class="score">${ui[currentLang].score}: ${item.score}</span>
+            </div>
+
+            <p><b>${ui[currentLang].reason}:</b> ${item.reason}</p>
+
+            <a class="open-btn" href="/crop/${String(item.crop_slug).toLowerCase()}">
+              ${ui[currentLang].openRoadmap}
+            </a>
+          </div>
+        `;
+      });
+
+      resultsBox.innerHTML = html;
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === "te" ? "en" : "te";
+      localStorage.setItem("rec_lang", currentLang);
+
+      applyLang();
+
+      // ✅ Update results UI also
+      if (lastResults.length > 0) {
+        renderResults(lastResults);
+      }
+    }
+
+    async function recommendCrops() {
+      const soil = document.getElementById("soil").value;
+      const season = document.getElementById("season").value;
+      const water = document.getElementById("water").value;
+      const budget = document.getElementById("budget").value;
+
+      const resultsBox = document.getElementById("resultsBox");
+      resultsBox.innerHTML = `<p>${ui[currentLang].loading}</p>`;
+
+      try {
+        const res = await fetch("/api/recommend_crop", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ soil, season, water, budget, lang: currentLang })
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+          resultsBox.innerHTML = `<p class="error-message">${data.error}</p>`;
+          return;
+        }
+
+        lastResults = data.recommended || [];
+        renderResults(lastResults);
+
+      } catch (e) {
+        resultsBox.innerHTML = `<p class="error-message">${ui[currentLang].failed}</p>`;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("langToggle").addEventListener("click", toggleLanguage);
+      document.getElementById("btnRec").addEventListener("click", recommendCrops);
+      applyLang();
+    });
+  </script>
+
+</body>
+</html>
