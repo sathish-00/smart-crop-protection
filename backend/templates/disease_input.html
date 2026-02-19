@@ -4,293 +4,372 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Disease ID - AgriLink</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/disease.css') }}">
+    
     <style>
-        /* --- HEADER CENTER ALIGNMENT STYLES --- */
-        .app-header { 
-            background: #5a4e3e; 
-            color: white; 
-            padding: 1rem; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-        }
+        /* --- HEADER & LAYOUT --- */
+        .app-header { background: #5a4e3e; color: white; padding: 1rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .header-left { flex: 1; display: flex; justify-content: flex-start; }
+        .header-center { flex: 2; text-align: center; display: flex; justify-content: center; }
+        .header-center h1 { margin: 0; font-size: 1.5rem; white-space: nowrap; }
+        .header-right { flex: 1; display: flex; justify-content: flex-end; }
 
-        /* 1. Left Side (Back Button) - Takes 1 part space */
-        .header-left {
-            flex: 1;
-            display: flex;
-            justify-content: flex-start;
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: #f4f4f4; 
+            margin: 0; 
+            padding-bottom: 90px; 
         }
-
-        /* 2. Middle (Title) - Takes 2 parts space & Centers Text */
-        .header-center {
-            flex: 2;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-        }
-        .header-center h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            white-space: nowrap;
-        }
-
-        /* 3. Right Side (Toggle) - Takes 1 part space */
-        .header-right {
-            flex: 1;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        /* --- REST OF CSS --- */
         .back-button { color: white; text-decoration: none; font-size: 1.5rem; font-weight: bold;}
         .card { background: rgb(255, 255, 255); padding: 20px; margin: 20px auto; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 800px; }
+        
+        /* --- TABS --- */
         .tab-buttons { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
-        .tab-btn { flex: 1; padding: 10px; background: none; border: none; cursor: pointer; font-weight: bold; }
-        .tab-btn.active { border-bottom: 3px solid #67b8c1; color: #165852; }
-        .tab-content { display: none; }
+        .tab-btn { flex: 1; padding: 12px; background: none; border: none; cursor: pointer; font-weight: bold; font-size: 1.1rem; color: #555; }
+        .tab-btn.active { border-bottom: 4px solid #67b8c1; color: #165852; background: #f0fdf4; }
+        .tab-content { display: none; padding-top: 15px; }
         .tab-content.active { display: block; }
 
-        .feature-button { 
-            background: #452351; 
-            color: white; 
-            width: auto; 
-            min-width: 150px;
-            padding: 10px 20px; 
-            border: none; 
-            border-radius: 5px; 
-            font-size: 1.1rem; 
-            cursor: pointer; 
-            margin-top: 10px;
-            display: inline-block;
+        /* --- CHECKLIST STYLING --- */
+        .checklist-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .checklist-item {
+            background: #fff; border: 1px solid #ddd; padding: 12px; border-radius: 8px;
+            display: flex; align-items: flex-start; cursor: pointer; transition: 0.2s;
+        }
+        .checklist-item:hover { background: #e8f5e9; border-color: #2e7d32; }
+        .checklist-item input { margin-top: 5px; transform: scale(1.3); margin-right: 12px; }
+        .symptom-text { font-size: 1rem; color: #333; }
+        .symptom-text small { display: block; color: #666; font-size: 0.85rem; margin-top: 2px; }
+
+        /* --- SQUARE UPLOAD BOX --- */
+        .image-upload {
+            width: 300px;           
+            height: 300px;          
+            margin: 20px auto;      
+            border: 3px dashed #4d5f43; 
+            border-radius: 12px;
+            background: #fafafa;
+            display: flex;          
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #preview-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover; 
         }
 
-        .reset-button { 
-            background: #aa436e; 
-            color: #000000; 
-            width: auto; 
-            min-width: 100px;
-            padding: 10px 20px; 
-            border: 1px solid #260a3d; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            margin-top: 10px; 
-            display: inline-block;
-            margin-left: 10px;
+        /* --- 🟢 EXACT INDEX PAGE BUTTON STYLES --- */
+        .action-buttons {
+            width: 90%; 
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 7px;
+            background-color: transparent;
+            margin: 20px auto;
+        }
+
+        .feature-button, .reset-button {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            text-decoration: none;
+            color: white;
+            background-color: #246aac; 
+            border-radius: 10px;
+            margin: 0 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .feature-button:hover, .reset-button:hover { background-color: #376477; }
+
+        .feature-button i, .reset-button i {
+            font-size: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            font-style: normal;
+        }
+
+        .feature-button span, .reset-button span {
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.0;
         }
 
         .language-toggle {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid white;
-            padding: 5px 15px;
-            border-radius: 15px;
-            cursor: pointer;
+            background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid white;
+            padding: 5px 15px; border-radius: 15px; cursor: pointer;
         }
 
-        textarea { 
-            width: 100%; 
-            padding: 10px; 
-            border: 1px solid #ddd; 
-            border-radius: 5px; 
-            box-sizing: border-box; /* Fixes padding issues */
+        /* --- DROPDOWN STYLING --- */
+        #crop-select {
+            width: 100%; padding: 15px 20px; font-size: 1.1rem; font-weight: 600;
+            color: #333; background-color: #ffffff;
+            border: 2px solid #a5d6a7; border-radius: 12px; cursor: pointer; outline: none;
+            appearance: none; -webkit-appearance: none; -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232e7d32%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat; background-position: right 20px center; background-size: 16px auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
-        .action-section {
-            text-align: center;
+        /* --- RESULTS --- */
+        .result-box {
+            background: #e8f5e9; border-left: 5px solid #2e7d32;
+            padding: 15px; border-radius: 4px; margin-top: 15px;
         }
         
+        .loading-spinner {
+            display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.3);
+            border-radius: 50%; border-top-color: #0288d1;
+            animation: spin 1s ease-in-out infinite; margin-right: 10px;
+        }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- SUCCESS MESSAGE --- */
+        .success-msg {
+            background-color: #dcedc8; color: #33691e; border: 1px solid #c5e1a5;
+            padding: 10px; border-radius: 5px; margin-top: 10px; font-weight: bold;
+            text-align: center; display: none; font-size: 0.9rem; animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- GOOGLE MAPS CARD STYLE --- */
+        .shop-card {
+            background: #fff; border: 1px solid #dadce0; border-radius: 12px; padding: 15px;
+            text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-left: 15px;
+            min-width: 200px; max-width: 250px; display: flex; flex-direction: column; align-items: center;
+        }
+
+        .shop-btn {
+            background-color: #4285F4; color: white; border: none; padding: 10px 20px;
+            border-radius: 20px; font-weight: bold; text-decoration: none; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 8px; margin-top: 10px; width: 100%;
+            justify-content: center; transition: background-color 0.2s;
+        }
+        .shop-btn:hover { background-color: #357ae8; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+        /* --- FOOTER STYLES --- */
+        .app-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; border-top: 1px solid #ddd;
+            display: flex; justify-content: space-around; padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 999;
+        }
+        .nav-item {
+            text-decoration: none; color: #777; text-align: center;
+            font-size: 0.8rem; display: flex; flex-direction: column; align-items: center;
+        }
+        .nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
+        .nav-item.active { color: #2e7d32; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header class="app-header">
-        <div class="header-left">
-            <a href="{{ url_for('main.index') }}" class="back-button">←</a>
-        </div>
-        
-        <div class="header-center">
-            <h1 id="pageTitle">Disease ID</h1>
-        </div>
-        
-        <div class="header-right">
-            <button id="langToggle" class="language-toggle"> తెలుగు</button>
-        </div>
+        <div class="header-left"><a href="{{ url_for('main.index') }}" class="back-button">←</a></div>
+        <div class="header-center"><h1 id="pageTitle">Disease ID</h1></div>
+        <div class="header-right"><button id="langToggle" class="language-toggle"> తెలుగు</button></div>
     </header>
 
     <main class="diagnosis-container">
+        
         <section class="crop-selection card">
             <h2 id="selectCropTitle">Select Crop</h2>
-            <select id="crop-select" required style="width: 100%; padding: 10px; font-size: 16px;">
+            <select id="crop-select" onchange="updateChecklist()">
                 <option value="" id="optDefault">-- Select Crop --</option>
                 <option value="rice" id="optRice">Rice (వరి)</option>
-                <option value="wheat" id="optWheat">Wheat (గోధుమ)</option>
-                <option value="maize" id="optMaize">Maize (మొక్కజొన్న)</option>
                 <option value="cotton" id="optCotton">Cotton (పత్తి)</option>
-                <option value="sugarcane" id="optSugarcane">Sugarcane (చెరకు)</option>
+                <option value="maize" id="optMaize">Maize (మొక్కజొన్న)</option>
+                <option value="chilli" id="optChilli">Chilli (మిరప)</option>
                 <option value="groundnut" id="optGroundnut">Groundnut (వేరుశనగ)</option>
                 <option value="tomato" id="optTomato">Tomato (టమాటా)</option>
             </select>
         </section>
 
         <section class="input-methods card">
-            <h2 id="enterSymptomsTitle">Enter Symptoms</h2>
+            <h2 id="enterSymptomsTitle">Diagnose Disease</h2>
 
             <div class="tab-buttons">
-                <button class="tab-btn active" data-tab="text" id="tabText">Text</button>
-                <button class="tab-btn" data-tab="checklist" id="tabChecklist">Checklist</button>
-                <button class="tab-btn" data-tab="image" id="tabPhoto">Photo</button>
+                <button class="tab-btn active" data-tab="checklist" id="tabChecklist">📝 Symptom Checklist</button>
+                <button class="tab-btn" data-tab="image" id="tabPhoto">📸 Upload Photo</button>
             </div>
 
-            <div id="text-tab" class="tab-content active">
-                <p id="textDesc">Describe the symptoms clearly.</p>
-                <textarea id="symptom-input" placeholder="Ex: Leaves turning yellow, brown spots..." rows="4"></textarea>
-            </div>
-
-            <div id="checklist-tab" class="tab-content">
-                <p id="checkDesc">Select visible symptoms:</p>
-                <div class="symptom-checklist">
-                    <div class="symptom-group">
-                        <h4 id="leafSym">Leaf Symptoms</h4>
-                        <label><input type="checkbox" value="yellow_leaves"> <span class="chk-label" data-en="Yellow Leaves" data-te="పసుపు ఆకులు">Yellow Leaves</span></label><br>
-                        <label><input type="checkbox" value="brown_spots"> <span class="chk-label" data-en="Brown Spots" data-te="గోధుమ రంగు మచ్చలు">Brown Spots</span></label><br>
-                        <label><input type="checkbox" value="curling"> <span class="chk-label" data-en="Curling Leaves" data-te="ముడుచుకున్న ఆకులు">Curling Leaves</span></label>
+            <div id="checklist-tab" class="tab-content active">
+                <p id="checkDesc" style="color:#666; margin-bottom:10px;">Select the symptoms visible on the plant:</p>
+                <div id="dynamic-checklist" class="checklist-grid">
+                    <div id="selectPrompt" style="text-align:center; padding:20px; color:#888; background:#f9f9f9; border-radius:8px;">
+                        👈 Please select a crop above to see symptoms.
                     </div>
                 </div>
             </div>
 
             <div id="image-tab" class="tab-content">
-                <p id="uploadDesc">Upload a clear photo of the affected plant.</p>
-                <div class="image-upload" style="text-align: center; padding: 20px; border: 2px dashed #4d5f43;">
-                    <input type="file" id="plant-image" accept="image/*" style="display: none;">
+                <p id="uploadDesc" style="font-weight:bold; transition:0.3s; text-align:center;">Upload a clear photo of the affected plant.</p>
+                
+                <div class="image-upload">
+                    <input type="file" id="plant-image" accept="image/*" style="display: none;" onchange="previewImage(this)">
                     <div id="upload-placeholder">
-                        <button type="button" class="upload-btn" onclick="document.getElementById('plant-image').click()" id="btnChoosePhoto" style="padding: 10px 20px; background: #eee; border: none; cursor: pointer;">Choose Photo</button>
+                        <i class="bi bi-camera" style="font-size: 3rem; color:#888;"></i><br>
+                        <button type="button" class="upload-btn" onclick="document.getElementById('plant-image').click()" id="btnChoosePhoto" style="margin-top:10px; padding: 10px 20px; background: #eee; border: none; cursor: pointer; border-radius:5px;">Choose Photo</button>
                     </div>
-                    <div id="image-preview" style="display: none; margin-top: 15px;">
-                        <img id="preview-img" src="" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 5px;">
-                        <br>
-                        <button type="button" onclick="removeImage()" style="margin-top: 10px; color: red; border: none; background: none; cursor: pointer;">❌ Remove</button>
+                    <div id="image-preview" style="display: none; width:100%; height:100%; position:relative;">
+                        <img id="preview-img" src="" alt="Preview" style="width:100%; height:100%; object-fit:cover;">
+                        <button type="button" onclick="removeImage()" style="position:absolute; top:5px; right:5px; background:rgba(255,0,0,0.8); color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer;">X</button>
                     </div>
                 </div>
+                
+                <div id="upload-success" class="success-msg">
+                    <i class="bi bi-check-circle-fill" style="font-size:1.2rem;"></i><br>
+                    <span>Successfully Added! Click 'Identify' below.</span>
+                </div>
             </div>
-        </section>
 
-        <section class="action-section" style="max-width: 600px; margin: 0 auto;">
-            <button id="identify-button" class="feature-button">
-                <span class="btn-icon"></span> <span id="btnIdentify">Identify Disease</span>
-            </button>
-            <button id="reset-button" class="reset-button">
-                <span class="btn-icon"></span> <span id="btnReset">Reset</span>
-            </button>
-            <p id="loading-message" style="display: none; text-align: center; color: #0288d1; margin-top: 10px;">
-                <span class="loading-spinner"></span> <span id="msgAnalyzing">Analyzing symptoms...</span>
+            <div class="action-buttons">
+                <button id="identify-button" class="feature-button">
+                    <i class="bi bi-search"></i> 
+                    <span id="btnIdentify">Identify</span>
+                </button>
+                
+                <button id="reset-button" class="reset-button">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    <span id="btnReset">Reset</span>
+                </button>
+            </div>
+
+            <p id="loading-message" style="display: none; text-align: center; color: #0288d1; margin-top: 15px; font-weight:bold;">
+                <span class="loading-spinner"></span> <span id="msgAnalyzing">Analyzing...</span>
             </p>
         </section>
 
         <section id="result-area" class="card" style="display: none;">
-            <div class="result-header" style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
-                <h2 id="result-title" style="color: #d32f2f;"></h2>
-                <div id="confidence-score" style="color: #666; font-size: 0.9em;"></div>
+            <div class="result-header" style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center;">
+                <h2 id="result-title" style="color: #d32f2f; margin:0;"></h2>
+                <span id="confidence-score" style="background:#2e7d32; color:white; padding:4px 10px; border-radius:12px; font-size:0.85rem;"></span>
             </div>
             
             <div id="result-content"></div>
 
-            <div class="result-actions" style="margin-top: 20px; display: flex; gap: 10px;">
-                <button onclick="window.location.href='{{ url_for('main.contact_support') }}'" style="flex: 1; padding: 10px; background: #1976D2; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            <div class="result-actions" style="margin-top: 20px;">
+                <button onclick="window.location.href='{{ url_for('main.contact_support') }}'" style="width:100%; padding: 12px; background: #1976D2; color: white; border: none; border-radius: 5px; cursor: pointer; font-size:1.1rem;">
                     <span id="btnExpert">Ask Expert</span>
                 </button>
             </div>
         </section>
     </main>
 
+    <footer class="app-footer">
+        <a href="/" class="nav-item"><i class="bi bi-house-door"></i><span>Home</span></a>
+        <a href="/disease/input" class="nav-item active"><i class="bi bi-flower1"></i><span>Diagnosis</span></a>
+        <a href="/shops/finder" class="nav-item"><i class="bi bi-shop"></i><span>Shops</span></a>
+        <a href="/contact" class="nav-item"><i class="bi bi-headset"></i><span>Help</span></a>
+    </footer>
+
     <script>
-        // --- 1. Language Handling ---
         let currentLang = localStorage.getItem("disease_lang") || "en";
-        
-        const translations = {
-            en: {
-                pageTitle: "Disease ID",
-                langBtn: "తెలుగు",
-                selectCropTitle: "Select Crop",
-                optDefault: "-- Select Crop --",
-                optRice: "Rice", optWheat: "Wheat", optMaize: "Maize", optCotton: "Cotton", 
-                optSugarcane: "Sugarcane", optGroundnut: "Groundnut", optTomato: "Tomato",
-                enterSymptomsTitle: "Enter Symptoms",
-                tabText: "Text", tabChecklist: "Checklist", tabPhoto: "Photo",
-                textDesc: "Describe the symptoms clearly.",
-                textPlaceholder: "Ex: Leaves turning yellow, brown spots...",
-                checkDesc: "Select visible symptoms:",
-                leafSym: "Leaf Symptoms",
+        let lastResultData = null; 
+
+        // SYMPTOMS DATABASE
+        const symptomsDB = {
+            rice: [{id:"leaf_blast",en:"Diamond/Eye spots",te:"వజ్రాకారపు మచ్చలు"},{id:"brown_spot",en:"Round brown spots",te:"గోధుమ మచ్చలు"},{id:"bacterial_leaft_blight",en:"Leaves drying from tip",te:"ఆకులు ఎండుట"}],
+            cotton: [{id:"bacterial_light",en:"Black angular spots",te:"నల్ల మచ్చలు"},{id:"curl_virus",en:"Leaves curling up",te:"ఆకు ముడత"},{id:"leaf_redding",en:"Leaves turning red",te:"ఆకులు ఎర్రబడటం"},{id:"leaf_hopper_jassids",en:"Leaves yellow/curl down",te:"ఆకులు పసుపు/కిందకు ముడత"}],
+            chilli: [{id:"chilli_leaf_curl",en:"Leaves curling up",te:"ఆకు ముడత"},{id:"chilli_cercospors",en:"Frog-eye spots",te:"కప్ప కన్ను మచ్చ"},{id:"powdery_mildew",en:"White powder",te:"తెల్లటి బూడిద"},{id:"chilli_mitesandtrips",en:"Leaves curling down",te:"ఆకులు కిందకు ముడత"}],
+            groundnut: [{id:"early_leaf_spot",en:"Black spots (Tikka)",te:"నల్లటి మచ్చలు"},{id:"early_rust",en:"Rust pustules",te:"తుప్పు మచ్చలు"},{id:"nutriton_deficiency",en:"Yellow leaves/green veins",te:"పసుపు ఆకులు"}],
+            tomato: [{id:"tomato_leaf_spot",en:"Concentric rings",te:"వలయాల మచ్చలు"},{id:"tomat_verticulum",en:"Wilting/Yellowing",te:"వాడిపోవడం"}],
+            maize: [{id:"maize_streak_virus",en:"Yellow streaks",te:"పసుపు చారలు"},{id:"maize_leaf_blight",en:"Cigar spots",te:"సిగార్ మచ్చలు"},{id:"maize_common_rust",en:"Rust pustules",te:"తుప్పు పొక్కులు"}]
+        };
+
+        const uiText = {
+            en: { 
+                pageTitle: "Disease ID", langBtn: "తెలుగు", 
+                selectCropTitle: "Select Crop", optDefault: "-- Select Crop --",
+                enterSymptomsTitle: "Diagnose Disease", tabChecklist: "📝 Symptom Checklist", tabPhoto: "📸 Upload Photo",
+                checkDesc: "Select the symptoms visible on the plant:", 
                 uploadDesc: "Upload a clear photo of the affected plant.",
+                uploadDescSuccess: "✅ Photo Ready! Please click 'Identify' below.", 
+                btnIdentify: "Identify", btnReset: "Reset", msgAnalyzing: "Analyzing...", btnExpert: "Ask Expert",
                 btnChoosePhoto: "Choose Photo",
-                btnIdentify: "Identify Disease",
-                btnReset: "Reset",
-                msgAnalyzing: "Analyzing symptoms...",
-                btnExpert: "Ask Expert"
+                optRice: "Rice", optCotton: "Cotton", optMaize: "Maize", optChilli: "Chilli", optGroundnut: "Groundnut", optTomato: "Tomato",
+                lblChem: "Chemical Treatment", lblOrg: "Organic Treatment", lblMatch: "Match",
+                msgUploadSuccess: "✅ Uploaded Successfully!<br>Please click 'Identify' below.",
+                txtProduct: "Recommended Product:", txtFindShop: "Find Nearby Shops",
+                txtSelectPrompt: "👈 Please select a crop above to see symptoms."
             },
-            te: {
-                pageTitle: "తెగులు గుర్తింపు",
-                langBtn: "English",
-                selectCropTitle: "పంట ఎంచుకోండి",
-                optDefault: "-- పంటను ఎంచుకోండి --",
-                optRice: "వరి", optWheat: "గోధుమ", optMaize: "మొక్కజొన్న", optCotton: "పత్తి", 
-                optSugarcane: "చెరకు", optGroundnut: "వేరుశనగ", optTomato: "టమాటా",
-                enterSymptomsTitle: "లక్షణాలను నమోదు చేయండి",
-                tabText: "టెక్స్ట్", tabChecklist: "జాబితా", tabPhoto: "ఫోటో",
-                textDesc: "లక్షణాలను స్పష్టంగా వివరించండి.",
-                textPlaceholder: "ఉదా: ఆకులు పసుపు రంగులోకి మారడం, మచ్చలు...",
-                checkDesc: "కనిపించే లక్షణాలను ఎంచుకోండి:",
-                leafSym: "ఆకుల లక్షణాలు",
+            te: { 
+                pageTitle: "తెగులు గుర్తింపు", langBtn: "English", 
+                selectCropTitle: "పంట ఎంచుకోండి", optDefault: "-- పంటను ఎంచుకోండి --",
+                enterSymptomsTitle: "తెగులు నిర్ధారణ", tabChecklist: "📝 లక్షణాల జాబితా", tabPhoto: "📸 ఫోటో అప్‌లోడ్",
+                checkDesc: "మొక్కపై కనిపించే లక్షణాలను ఎంచుకోండి:", 
                 uploadDesc: "ప్రభావిత మొక్క యొక్క స్పష్టమైన ఫోటోను అప్‌లోడ్ చేయండి.",
+                uploadDescSuccess: "✅ ఫోటో సిద్ధంగా ఉంది! కింద ఉన్న 'గుర్తించండి' బటన్‌ని నొక్కండి.", 
+                btnIdentify: "గుర్తించండి", btnReset: "రీసెట్", msgAnalyzing: "విశ్లేషిస్తోంది...", btnExpert: "నిపుణుడిని అడగండి",
                 btnChoosePhoto: "ఫోటో ఎంచుకోండి",
-                btnIdentify: "తెగులును గుర్తించండి",
-                btnReset: "రీసెట్ చేయండి",
-                msgAnalyzing: "విశ్లేషిస్తోంది...",
-                btnExpert: "నిపుణుడిని అడగండి"
+                optRice: "వరి", optCotton: "పత్తి", optMaize: "మొక్కజొన్న", optChilli: "మిరప", optGroundnut: "వేరుశనగ", optTomato: "టమాటా",
+                lblChem: "రసాయన చికిత్స", lblOrg: "సేంద్రియ చికిత్స", lblMatch: "పోలిక",
+                msgUploadSuccess: "✅ ఫోటో అప్‌లోడ్ విజయవంతమైంది!<br>కింద ఉన్న 'గుర్తించండి' బటన్‌ని నొక్కండి.",
+                txtProduct: "సిఫార్సు చేసిన మందు:", txtFindShop: "దుకాణాలను వెతకండి",
+                txtSelectPrompt: "👈 లక్షణాలను చూడటానికి పైన పంటను ఎంచుకోండి."
             }
         };
 
         function applyLanguage() {
-            const t = translations[currentLang];
-            
-            // Text Content Updates
+            const t = uiText[currentLang];
+            // 🟢 FIX: Ensure EVERY element has an ID and is updated here
             document.getElementById("pageTitle").textContent = t.pageTitle;
             document.getElementById("langToggle").textContent = t.langBtn;
             document.getElementById("selectCropTitle").textContent = t.selectCropTitle;
             document.getElementById("optDefault").textContent = t.optDefault;
+            
             document.getElementById("optRice").textContent = t.optRice;
-            document.getElementById("optWheat").textContent = t.optWheat;
-            document.getElementById("optMaize").textContent = t.optMaize;
             document.getElementById("optCotton").textContent = t.optCotton;
-            document.getElementById("optSugarcane").textContent = t.optSugarcane;
+            document.getElementById("optMaize").textContent = t.optMaize;
+            document.getElementById("optChilli").textContent = t.optChilli;
             document.getElementById("optGroundnut").textContent = t.optGroundnut;
             document.getElementById("optTomato").textContent = t.optTomato;
-            
+
             document.getElementById("enterSymptomsTitle").textContent = t.enterSymptomsTitle;
-            document.getElementById("tabText").textContent = t.tabText;
             document.getElementById("tabChecklist").textContent = t.tabChecklist;
             document.getElementById("tabPhoto").textContent = t.tabPhoto;
-            
-            document.getElementById("textDesc").textContent = t.textDesc;
-            document.getElementById("symptom-input").placeholder = t.textPlaceholder;
-            
             document.getElementById("checkDesc").textContent = t.checkDesc;
-            document.getElementById("leafSym").textContent = t.leafSym;
-            
-            document.getElementById("uploadDesc").textContent = t.uploadDesc;
             document.getElementById("btnChoosePhoto").textContent = t.btnChoosePhoto;
             
+            // Check if "selectPrompt" exists (it might be replaced by checklist)
+            const prompt = document.getElementById("selectPrompt");
+            if(prompt) prompt.textContent = t.txtSelectPrompt;
+
+            const fileInput = document.getElementById('plant-image');
+            if(fileInput.files && fileInput.files[0]) {
+                document.getElementById("uploadDesc").textContent = t.uploadDescSuccess;
+            } else {
+                document.getElementById("uploadDesc").textContent = t.uploadDesc;
+            }
+
             document.getElementById("btnIdentify").textContent = t.btnIdentify;
             document.getElementById("btnReset").textContent = t.btnReset;
             document.getElementById("msgAnalyzing").textContent = t.msgAnalyzing;
             document.getElementById("btnExpert").textContent = t.btnExpert;
+            
+            document.getElementById("upload-success").innerHTML = `
+                <i class="bi bi-check-circle-fill" style="font-size:1.5rem;"></i><br>
+                ${t.msgUploadSuccess}
+            `;
 
-            // Update Checkbox Labels
-            document.querySelectorAll(".chk-label").forEach(el => {
-                el.textContent = el.getAttribute(`data-${currentLang}`);
-            });
+            updateChecklist(); 
+            if (lastResultData) renderResult(lastResultData);
         }
 
         document.getElementById("langToggle").addEventListener("click", () => {
@@ -299,117 +378,170 @@
             applyLanguage();
         });
 
-        // --- 2. Tab Functionality ---
-        document.querySelectorAll('.tab-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                button.classList.add('active');
-                document.getElementById(`${button.getAttribute('data-tab')}-tab`).classList.add('active');
-            });
-        });
+        function updateChecklist() {
+            // Save selected symptom
+            const currentSelected = document.querySelector('input[name="symptom_radio"]:checked');
+            const savedValue = currentSelected ? currentSelected.value : null;
 
-        // --- 3. Image Handling ---
-        const fileInput = document.getElementById('plant-image');
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files && e.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('preview-img').src = e.target.result;
-                    document.getElementById('image-preview').style.display = 'block';
-                    document.getElementById('upload-placeholder').style.display = 'none';
-                };
-                reader.readAsDataURL(e.target.files[0]);
+            const crop = document.getElementById('crop-select').value;
+            const container = document.getElementById('dynamic-checklist');
+            
+            // If no crop, show prompt in correct language
+            if (!crop || !symptomsDB[crop]) {
+                const t = uiText[currentLang];
+                container.innerHTML = `<div id="selectPrompt" style="text-align:center; padding:20px; color:#888; background:#f9f9f9; border-radius:8px;">${t.txtSelectPrompt}</div>`;
+                return;
             }
-        });
 
-        function removeImage() {
-            fileInput.value = '';
-            document.getElementById('image-preview').style.display = 'none';
-            document.getElementById('upload-placeholder').style.display = 'block';
+            // Re-render checklist
+            container.innerHTML = symptomsDB[crop].map(s => `
+                <label class="checklist-item">
+                    <input type="radio" name="symptom_radio" value="${s.id}">
+                    <div class="symptom-text"><strong>${currentLang==='en'?s.en:s.te}</strong></div>
+                </label>`).join('');
+
+            // Restore selection if it exists
+            if (savedValue) {
+                const radioToSelect = document.querySelector(`input[value="${savedValue}"]`);
+                if (radioToSelect) radioToSelect.checked = true;
+            }
         }
 
-        document.getElementById('reset-button').addEventListener('click', () => {
-            document.getElementById('crop-select').value = "";
-            document.getElementById('symptom-input').value = "";
-            document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
-            removeImage();
-            document.getElementById('result-area').style.display = 'none';
-        });
+        function renderResult(data) {
+            let info = currentLang === 'en' ? data.en : data.te;
+            let t = uiText[currentLang];
+            document.getElementById('result-area').style.display = 'block';
+            document.getElementById('result-title').innerText = info.name;
+            document.getElementById('confidence-score').innerText = `${data.confidence}% ${t.lblMatch}`;
+            
+            let imgHtml = "";
+            if (data.product_image) {
+                imgHtml = `
+                    <div class="shop-card">
+                        <img src="/static/products/${data.product_image}" 
+                             alt="Product" 
+                             style="width: 100%; height: 180px; object-fit: contain; margin-bottom: 10px;">
+                        
+                        <div style="font-size:0.9rem; color:#555; margin-bottom:5px;">${t.txtProduct}</div>
+                        
+                        <a href="https://www.google.com/maps/search/fertilizer+shops+near+me/" target="_blank" class="shop-btn">
+                            <i class="bi bi-geo-alt-fill"></i> ${t.txtFindShop}
+                        </a>
+                    </div>
+                `;
+            }
 
-        // --- 4. Identify Function (API Call) ---
+            document.getElementById('result-content').innerHTML = `
+                <div class="result-box" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:250px;">
+                        <p><strong>💊 ${t.lblChem}:</strong><br> ${info.chemical}</p>
+                        <hr style="border:0; border-top:1px solid #ccc; margin:10px 0;">
+                        <p><strong>🌿 ${t.lblOrg}:</strong><br> ${info.organic}</p>
+                    </div>
+                    ${imgHtml}
+                </div>
+            `;
+        }
+
+        // 🟢 FIX: STRICT LOGIC SEPARATION
         document.getElementById('identify-button').addEventListener('click', async () => {
             const crop = document.getElementById('crop-select').value;
+            // Common check: Must select a crop first
             if (!crop) {
                 alert(currentLang === 'en' ? "Please select a crop." : "దయచేసి పంటను ఎంచుకోండి.");
                 return;
             }
 
-            // Prepare Data
             const formData = new FormData();
             formData.append('crop', crop);
-            formData.append('lang', currentLang);
 
-            // Check active tab
-            if (document.getElementById('text-tab').classList.contains('active')) {
-                formData.append('type', 'text');
-                formData.append('data', document.getElementById('symptom-input').value);
-            } else if (document.getElementById('checklist-tab').classList.contains('active')) {
-                formData.append('type', 'checklist');
-                const checked = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value);
-                formData.append('data', checked.join(','));
-            } else {
-                formData.append('type', 'image');
-                if (fileInput.files[0]) {
-                    formData.append('file', fileInput.files[0]);
-                } else {
-                    alert(currentLang === 'en' ? "Please upload a photo." : "దయచేసి ఫోటోను అప్‌లోడ్ చేయండి.");
+            // Check which tab is actually active
+            const isImageTab = document.getElementById('tabPhoto').classList.contains('active');
+
+            if (isImageTab) {
+                // PHOTO MODE
+                const fileInput = document.getElementById('plant-image');
+                if (!fileInput.files[0]) {
+                    alert(currentLang === 'en' ? "Please upload a photo." : "దయచేసి ఫోటో అప్‌లోడ్ చేయండి.");
                     return;
                 }
+                formData.append('type', 'image');
+                formData.append('file', fileInput.files[0]);
+            } else {
+                // CHECKLIST MODE
+                const selected = document.querySelector('input[name="symptom_radio"]:checked');
+                if (!selected) {
+                    alert(currentLang === 'en' ? "Please select a symptom." : "దయచేసి లక్షణాన్ని ఎంచుకోండి.");
+                    return;
+                }
+                formData.append('type', 'checklist');
+                formData.append('data', selected.value);
             }
 
-            // Show Loading
             document.getElementById('loading-message').style.display = 'block';
             document.getElementById('result-area').style.display = 'none';
 
             try {
-                const response = await fetch('/api/disease/identify', {
-                    method: 'POST',
-                    body: formData
-                });
-                
+                const response = await fetch('/api/disease/identify', { method: 'POST', body: formData });
                 const data = await response.json();
                 document.getElementById('loading-message').style.display = 'none';
-                document.getElementById('result-area').style.display = 'block';
-
                 if (data.success) {
-                    const info = currentLang === 'en' ? data.en : data.te;
-                    document.getElementById('result-title').textContent = info.name;
-                    document.getElementById('confidence-score').textContent = `Confidence: ${data.confidence}%`;
-                    
-                    document.getElementById('result-content').innerHTML = `
-                        <div style="margin-top: 15px;">
-                            <p><strong>${currentLang === 'en' ? 'Symptoms' : 'లక్షణాలు'}:</strong> ${info.symptoms}</p>
-                            <div style="background: #e8f5e9; padding: 15px; border-radius: 5px; margin-top: 10px;">
-                                <h4 style="margin-top: 0; color: #2e7d32;">${currentLang === 'en' ? 'Treatment' : 'చికిత్స'}</h4>
-                                <p><strong>${currentLang === 'en' ? 'Chemical' : 'రసాయన'}:</strong> ${info.chemical}</p>
-                                <p><strong>${currentLang === 'en' ? 'Natural' : 'సహజ'}:</strong> ${info.organic}</p>
-                            </div>
-                        </div>
-                    `;
+                    lastResultData = data;
+                    renderResult(data);
                 } else {
-                    document.getElementById('result-title').textContent = "Not Detected";
-                    document.getElementById('result-content').innerHTML = `<p>${currentLang === 'en' ? "Could not identify disease clearly. Please consult an expert." : "తెగులు స్పష్టంగా గుర్తించబడలేదు. దయచేసి నిపుణుడిని సంప్రదించండి."}</p>`;
+                    alert("Error: " + data.error);
                 }
-
-            } catch (error) {
-                console.error(error);
+            } catch (err) {
+                console.error(err);
                 document.getElementById('loading-message').style.display = 'none';
-                alert("Error connecting to server.");
+                alert("Server Error");
             }
         });
 
-        // Initial Load
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.getAttribute('data-tab') + '-tab').classList.add('active');
+            });
+        });
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview-img').src = e.target.result;
+                    document.getElementById('preview-img').style.display = 'block';
+                    document.getElementById('upload-placeholder').style.display = 'none';
+                    document.getElementById('upload-success').style.display = 'block';
+                    const t = uiText[currentLang];
+                    document.getElementById("uploadDesc").textContent = t.uploadDescSuccess;
+                    document.getElementById("uploadDesc").style.color = "#2e7d32"; 
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeImage() {
+            document.getElementById('plant-image').value = '';
+            document.getElementById('preview-img').style.display = 'none';
+            document.getElementById('upload-placeholder').style.display = 'block';
+            document.getElementById('upload-success').style.display = 'none';
+            const t = uiText[currentLang];
+            document.getElementById("uploadDesc").textContent = t.uploadDesc;
+            document.getElementById("uploadDesc").style.color = "inherit"; 
+        }
+
+        document.getElementById('reset-button').addEventListener('click', () => {
+            document.getElementById('crop-select').value = "";
+            const t = uiText[currentLang];
+            document.getElementById('dynamic-checklist').innerHTML = `<div id="selectPrompt" style="text-align:center; padding:20px; color:#888;">${t.txtSelectPrompt}</div>`;
+            removeImage();
+            document.getElementById('result-area').style.display = 'none';
+            lastResultData = null;
+        });
+
         applyLanguage();
     </script>
 </body>

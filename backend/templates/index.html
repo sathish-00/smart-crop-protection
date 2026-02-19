@@ -7,64 +7,178 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     
     <style>
-        /* Basic styling for the Lang Button just in case CSS is missing */
+        /* --- GLOBAL STYLES --- */
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #f4f4f4; }
+
+        /* --- HERO SECTION WITH YOUR IMAGE --- */
+        .main-header {
+            /* Using the Image URL you provided */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                              url('https://www.gsma.com/solutions-and-impact/connectivity-for-good/mobile-for-development/wp-content/uploads/2025/02/PLANTIX-2022-INDIA-60-scaled.jpg');
+            
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Parallax Effect */
+            height: 100vh; /* Full Screen Height */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Space out Top bar and Center content */
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Language Button (Top Right) */
+        .lang-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+
         .lang-btn {
-            background: rgba(100, 137, 190, 0.2);
-            color: rgb(130, 25, 130);
-            border: 1px solid rgb(62, 58, 176);
-            padding: 15px 35px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 20px;
             border-radius: 30px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 100%;
+            font-size: 1rem;
+            backdrop-filter: blur(5px);
+            transition: 0.3s;
         }
-        
+        .lang-btn:hover { background: white; color: #333; }
+
+        /* Welcome Text (Centered) */
+        .welcome-message {
+            flex-grow: 1; /* Pushes content to center */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .welcome-message h2 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .welcome-message p {
+            font-size: 1.5rem;
+            max-width: 700px;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+        }
+
+        /* Footer Navigation (Bottom) */
+        #main-nav-footer {
+            background: rgb(247, 242, 242);
+            padding: 15px 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 100;
+        }
+
+        .nav-button-container {
+            display: flex;
+            justify-content: space-around;
+            max-width: 900px;
+            margin: 0 auto;
+            flex-wrap: wrap; /* Wraps on small screens */
+        }
+
+        .footer-nav-button {
+            text-decoration: none;
+            color: #333;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            transition: 0.3s;
+            border-radius: 10px;
+            flex: 1; /* Distribute space evenly */
+            min-width: 80px;
+        }
+
+        .footer-nav-button:hover {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            transform: translateY(-5px);
+        }
+
+        .nav-icon {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .nav-text {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .welcome-message h2 { font-size: 2.5rem; }
+            .welcome-message p { font-size: 1.1rem; }
+            .nav-text { font-size: 0.9rem; }
+            .nav-icon { font-size: 0.7rem; }
+            #main-nav-footer { position: relative; } /* Unstick footer on mobile if content is tall */
+            .main-header { height: auto; min-height: 100vh; }
+        }
     </style>
 </head>
 
 <body>
-    <header class="main-header">
 
-        <div style="display:flex; justify-content:flex-end; padding:10px;">
+    <header class="main-header">
+        
+        <div class="lang-container">
             <button id="langToggle" class="lang-btn" onclick="toggleLanguage()">తెలుగు</button>
         </div>
 
         <div class="welcome-message">
-            <center>
-                <h2 id="welcomeTitle">Your Smart Farming Assistant</h2>
-                <p id="welcomeDesc">Integrated guidance and market links for efficient cultivation.</p>
-            </center>
+            <h2 id="welcomeTitle">AgriLink</h2>
+            <p id="welcomeDesc">Your Smart Farming Assistant for Disease Detection, Crop Guidance, and Market Access.</p>
         </div>
+
     </header>
 
     <footer id="main-nav-footer">
         <div class="nav-button-container">
 
             <a href="/disease/input" class="footer-nav-button">
-                <span class="nav-icon" id="navIcon1">Diagnosis</span>
-                <span class="nav-text" id="navText1">Detect Diseases</span>
+                <span class="nav-icon" id="navIcon1">DIAGNOSIS</span>
+                <span class="nav-text" id="navText1">Detect Disease</span>
             </a>
 
-            <a href="/crop/cotton" class="footer-nav-button">
-                <span class="nav-icon" id="navIcon2">Guidance</span>
+            <a href="/crop/cotton" class="footer-nav-button"> <span class="nav-icon" id="navIcon2">GUIDANCE</span>
                 <span class="nav-text" id="navText2">Crop Roadmap</span>
             </a>
 
             <a href="/shops/finder" class="footer-nav-button">
-                <span class="nav-icon" id="navIcon3">Market</span>
+                <span class="nav-icon" id="navIcon3">MARKET</span>
                 <span class="nav-text" id="navText3">Nearby Shops</span>
             </a>
 
-            <a href="/contact" class="footer-nav-button">
-                <span class="nav-icon" id="navIcon4">Support</span>
-                <span class="nav-text" id="navText4">Contact / Help</span>
-            </a>
-            
             <a href="/crop/recommend" class="footer-nav-button">
-                <span class="nav-icon" id="navIcon5">Smart</span>
-                <span class="nav-text" id="navText5">Recommend Crop</span>
+                <span class="nav-icon" id="navIcon5">SMART</span>
+                <span class="nav-text" id="navText5">Crop Advisor</span>
             </a>
 
+            <a href="/contact" class="footer-nav-button">
+                <span class="nav-icon" id="navIcon4">SUPPORT</span>
+                <span class="nav-text" id="navText4">Contact Us</span>
+            </a>
+            
         </div>
     </footer>
 
@@ -76,43 +190,25 @@
         const translations = {
             en: {
                 langBtn: "తెలుగు",
-                welcomeTitle: "Your Smart Farming Assistant",
-                welcomeDesc: "Integrated guidance and market links for efficient cultivation.",
+                welcomeTitle: "AgriLink",
+                welcomeDesc: "Your Smart Farming Assistant for Disease Detection, Crop Guidance, and Market Access.",
                 
-                navIcon1: "Diagnosis",
-                navText1: "Detect Diseases",
-                
-                navIcon2: "Guidance",
-                navText2: "Crop Roadmap",
-                
-                navIcon3: "Market",
-                navText3: "Nearby Shops",
-                
-                navIcon4: "Support",
-                navText4: "Contact / Help",
-
-                navIcon5: "Smart",
-                navText5: "Recommend Crop"
+                navIcon1: "DIAGNOSIS", navText1: "Detect Disease",
+                navIcon2: "GUIDANCE", navText2: "Crop Roadmap",
+                navIcon3: "MARKET", navText3: "Nearby Shops",
+                navIcon5: "SMART", navText5: "Crop Advisor",
+                navIcon4: "SUPPORT", navText4: "Contact Us"
             },
             te: {
                 langBtn: "English",
-                welcomeTitle: "మీ స్మార్ట్ వ్యవసాయ సహాయకుడు",
-                welcomeDesc: "సమర్థవంతమైన సాగు కోసం సమగ్ర మార్గదర్శకత్వం మరియు మార్కెట్ లింకులు.",
+                welcomeTitle: "అగ్రి లింక్",
+                welcomeDesc: "తెగుళ్ళ నిర్ధారణ మరియు పంటల సాగు కోసం మీ స్మార్ట్ వ్యవసాయ సహాయకుడు.",
                 
-                navIcon1: "రోగ నిర్ధారణ",
-                navText1: "తెగుళ్ళను గుర్తించండి",
-                
-                navIcon2: "మార్గదర్శకత్వం",
-                navText2: "పంట ప్రణాళిక",
-                
-                navIcon3: "మార్కెట్",
-                navText3: "దగ్గర్లోని దుకాణాలు",
-                
-                navIcon4: "మద్దతు",
-                navText4: "సంప్రదించండి",
-
-                navIcon5: "స్మార్ట్",
-                navText5: "పంట సూచన"
+                navIcon1: "రోగ నిర్ధారణ", navText1: "తెగులు గుర్తించు",
+                navIcon2: "మార్గదర్శకత్వం", navText2: "పంట ప్రణాళిక",
+                navIcon3: "మార్కెట్", navText3: "దగ్గర్లోని దుకాణాలు",
+                navIcon5: "స్మార్ట్", navText5: "పంట సూచన",
+                navIcon4: "మద్దతు", navText4: "సంప్రదించండి"
             }
         };
 
@@ -135,12 +231,11 @@
             document.getElementById("navIcon3").textContent = t.navIcon3;
             document.getElementById("navText3").textContent = t.navText3;
 
-            document.getElementById("navIcon4").textContent = t.navIcon4;
-            document.getElementById("navText4").textContent = t.navText4;
-
-            // New 5th Button
             document.getElementById("navIcon5").textContent = t.navIcon5;
             document.getElementById("navText5").textContent = t.navText5;
+
+            document.getElementById("navIcon4").textContent = t.navIcon4;
+            document.getElementById("navText4").textContent = t.navText4;
         }
 
         // 4. Toggle Function (Called by Button)
