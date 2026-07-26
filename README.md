@@ -80,6 +80,10 @@ AgriLink is an intelligent farming assistant designed to help farmers identify c
 * **Maps Integration:** Google Maps
 
 ---
+## System Architecture
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/a75fb25a-157c-4ad9-b6c3-585e02bb5205" />
+
+
 
 ## 🧠 How It Works
 
